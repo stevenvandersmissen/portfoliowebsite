@@ -1,0 +1,2319 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FINALE OPDRACHT — Portfolio Website · 6CM Coding</title>
+<meta name="description" content="Finale opdracht web development voor 6CM: ontwerp en bouw je eigen portfolio website. Van Figma-design met 3 breakpoints tot responsive code met video, masonry grid en projectdetailpagina's.">
+<style>
+/* ============================================================
+   BRUTALIST BRIEF — 6CM / CODING / FINALE OPDRACHT
+   Alles in één bestand. Geen externe fonts of libraries.
+   ============================================================ */
+
+:root{
+  --paper:#F4F1E8;
+  --ink:#0B0B0B;
+  --yellow:#FFE500;
+  --red:#FF3B00;
+  --blue:#1B2DFF;
+  --green:#00A86B;
+  --grey:#D8D4C7;
+  --border:3px solid var(--ink);
+  --shadow:6px 6px 0 var(--ink);
+  --shadow-sm:4px 4px 0 var(--ink);
+  --mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", "Roboto Mono", Menlo, Consolas, "Courier New", monospace;
+  --sans: "Helvetica Neue", Helvetica, Arial, "Segoe UI", Inter, system-ui, sans-serif;
+  --display: "Arial Black", "Helvetica Neue", Impact, Haettenschweiler, system-ui, sans-serif;
+  --maxw: 1180px;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; -webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *{animation:none !important; transition:none !important}
+}
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:clamp(16px, 1.6vw, 18px);
+  line-height:1.55;
+  background-image:
+    linear-gradient(to right, rgba(11,11,11,.055) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(11,11,11,.055) 1px, transparent 1px);
+  background-size:44px 44px;
+}
+
+img,svg,video{max-width:100%; display:block}
+a{color:var(--ink); text-decoration-thickness:2px; text-underline-offset:3px}
+a:hover{background:var(--yellow); box-shadow:0 0 0 3px var(--yellow)}
+:focus-visible{outline:4px solid var(--blue); outline-offset:3px}
+
+.wrap{max-width:var(--maxw); margin:0 auto; padding:0 18px}
+.mono{font-family:var(--mono)}
+.tag{
+  display:inline-block; font-family:var(--mono); font-size:.72rem; letter-spacing:.14em;
+  text-transform:uppercase; padding:5px 9px; border:2px solid var(--ink); background:var(--paper);
+  box-shadow:3px 3px 0 var(--ink); white-space:nowrap;
+}
+.tag--yellow{background:var(--yellow)}
+.tag--red{background:var(--red); color:#fff}
+.tag--blue{background:var(--blue); color:#fff}
+.tag--green{background:var(--green); color:#fff}
+
+/* ---------- TOP BAR ---------- */
+.topbar{
+  background:var(--ink); color:var(--paper); font-family:var(--mono);
+  font-size:.74rem; letter-spacing:.12em; text-transform:uppercase;
+  border-bottom:3px solid var(--ink);
+}
+.topbar .wrap{display:flex; flex-wrap:wrap; gap:6px 18px; justify-content:space-between; padding:8px 18px}
+.topbar b{color:var(--yellow)}
+
+/* ---------- HEADER / NAV ---------- */
+.site-header{
+  position:sticky; top:0; z-index:50;
+  background:var(--paper);
+  border-bottom:var(--border);
+  box-shadow:0 4px 0 var(--ink);
+}
+.header-inner{display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 18px; max-width:var(--maxw); margin:0 auto}
+.brand{display:flex; align-items:center; gap:10px; text-decoration:none; font-family:var(--display); text-transform:uppercase; letter-spacing:-.02em; line-height:.9}
+.brand:hover{background:none; box-shadow:none}
+.brand__mark{
+  width:44px; height:44px; background:var(--yellow); border:var(--border); box-shadow:var(--shadow-sm);
+  display:grid; place-items:center; font-family:var(--mono); font-weight:700; font-size:.78rem; letter-spacing:-.04em;
+}
+.brand__txt{font-size:1.02rem}
+.brand__txt span{display:block; font-family:var(--mono); font-size:.6rem; letter-spacing:.16em; font-weight:400}
+
+.menu-toggle{
+  display:inline-flex; align-items:center; gap:9px;
+  font-family:var(--mono); font-size:.76rem; letter-spacing:.14em; text-transform:uppercase;
+  background:var(--yellow); border:var(--border); box-shadow:var(--shadow-sm);
+  padding:11px 13px; cursor:pointer; color:var(--ink);
+}
+.menu-toggle:active{transform:translate(3px,3px); box-shadow:1px 1px 0 var(--ink)}
+.menu-toggle__bars{width:20px; height:14px; position:relative; display:block}
+.menu-toggle__bars::before,
+.menu-toggle__bars::after{
+  content:""; position:absolute; left:0; right:0; height:3px; background:var(--ink);
+  transition:transform .18s ease, top .18s ease;
+}
+.menu-toggle__bars::before{top:0}
+.menu-toggle__bars::after{top:11px}
+.menu-toggle[aria-expanded="true"] .menu-toggle__bars::before{top:5.5px; transform:rotate(45deg)}
+.menu-toggle[aria-expanded="true"] .menu-toggle__bars::after{top:5.5px; transform:rotate(-45deg)}
+
+.nav{display:none; flex-basis:100%}
+.nav.is-open{display:block}
+.nav__list{list-style:none; margin:10px 0 4px; padding:0; display:grid; gap:2px}
+.nav__list a{
+  display:block; padding:10px 12px; text-decoration:none; font-family:var(--mono);
+  font-size:.82rem; letter-spacing:.1em; text-transform:uppercase; border:2px solid transparent;
+}
+.nav__list a:hover{border-color:var(--ink); background:var(--yellow); box-shadow:3px 3px 0 var(--ink)}
+
+@media (min-width:900px){
+  .menu-toggle{display:none}
+  .nav{display:block !important; flex-basis:auto}
+  .nav__list{display:flex; gap:2px; margin:0}
+  .nav__list a{padding:8px 10px; font-size:.74rem}
+}
+
+/* ---------- MARQUEE ---------- */
+.marquee{
+  overflow:hidden; background:var(--ink); color:var(--yellow);
+  border-bottom:var(--border); font-family:var(--mono); text-transform:uppercase;
+  font-size:.78rem; letter-spacing:.2em; padding:9px 0; white-space:nowrap;
+}
+.marquee__track{display:inline-flex; gap:2.5rem; animation:slide 26s linear infinite; will-change:transform}
+.marquee span{display:inline-block}
+@keyframes slide{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+
+/* ---------- HERO ---------- */
+.hero{padding:clamp(28px,5vw,66px) 0 clamp(24px,4vw,44px); border-bottom:var(--border)}
+.hero__grid{display:grid; gap:22px}
+.hero__kicker{display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:14px}
+h1.hero__title{
+  font-family:var(--display); text-transform:uppercase; letter-spacing:-.045em;
+  font-size:clamp(2.6rem, 11vw, 8.6rem); line-height:1.02; margin:.06em 0 .38em;
+  text-wrap:balance;
+}
+h1.hero__title em{
+  font-style:normal; background:var(--yellow); box-shadow:inset 0 -.16em 0 var(--ink);
+  padding:0 .08em;
+}
+/* Drie regels, elk op een eigen lijn: ruime interlinie zodat de blokken niet tegen elkaar plakken */
+.hero__lead{font-size:clamp(1.05rem,2.3vw,1.36rem); max-width:58ch; margin:0 0 22px}
+.hero__lead strong{background:var(--yellow); box-shadow:0 0 0 2px var(--yellow)}
+
+.btn{
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--mono); font-weight:700; font-size:.9rem; letter-spacing:.1em; text-transform:uppercase;
+  background:var(--ink); color:var(--paper); border:var(--border); box-shadow:var(--shadow);
+  padding:15px 22px; text-decoration:none; cursor:pointer;
+}
+.btn:hover{background:var(--yellow); color:var(--ink); box-shadow:var(--shadow)}
+.btn:active{transform:translate(5px,5px); box-shadow:0 0 0 var(--ink)}
+.btn--ghost{background:var(--paper); color:var(--ink); box-shadow:var(--shadow-sm)}
+.btn--ghost:hover{background:var(--blue); color:#fff}
+.btn--red{background:var(--red); color:#fff}
+.btn--red:hover{background:var(--ink); color:var(--yellow)}
+.btn-row{display:flex; flex-wrap:wrap; gap:14px; align-items:center}
+
+.factsheet{
+  border:var(--border); background:#fff; box-shadow:var(--shadow);
+  display:grid; grid-template-columns:1fr; margin-top:8px;
+}
+.factsheet div{padding:12px 14px; border-bottom:2px solid var(--ink); display:flex; justify-content:space-between; gap:12px; align-items:baseline}
+.factsheet div:last-child{border-bottom:0}
+.factsheet dt, .factsheet .k{font-family:var(--mono); font-size:.7rem; letter-spacing:.13em; text-transform:uppercase; opacity:.7}
+.factsheet .v{font-family:var(--display); text-transform:uppercase; letter-spacing:-.01em; font-size:.98rem; text-align:right}
+@media (min-width:720px){
+  .hero__grid{grid-template-columns:1.45fr .85fr; align-items:start; gap:34px}
+}
+
+/* ---------- SECTIONS ---------- */
+section{padding:clamp(34px,5.5vw,74px) 0; border-bottom:var(--border)}
+.sec-head{display:grid; gap:10px; margin-bottom:clamp(20px,3vw,34px)}
+.sec-num{
+  font-family:var(--mono); font-size:.76rem; letter-spacing:.22em; text-transform:uppercase;
+  display:inline-flex; align-items:center; gap:8px;
+}
+.sec-num::before{content:""; width:26px; height:3px; background:var(--red)}
+h2{
+  font-family:var(--display); text-transform:uppercase; letter-spacing:-.035em;
+  font-size:clamp(1.75rem,5.2vw,3.2rem); line-height:.94; margin:0;
+}
+.sec-intro{max-width:66ch; margin:0; font-size:1.03rem}
+.sec-intro--big{font-size:clamp(1.1rem,2.4vw,1.4rem); max-width:62ch}
+
+/* ---------- GENERIC BLOCKS ---------- */
+.card{border:var(--border); background:#fff; box-shadow:var(--shadow); padding:18px}
+.card--yellow{background:var(--yellow)}
+.card--red{background:var(--red); color:#fff}
+.card--red a{color:#fff}
+.card--blue{background:var(--blue); color:#fff}
+.card--ink{background:var(--ink); color:var(--paper)}
+.card h3{font-family:var(--display); text-transform:uppercase; letter-spacing:-.01em; font-size:1.14rem; margin:0 0 .5em; line-height:1.05}
+.grid{display:grid; gap:18px}
+.grid--2{grid-template-columns:1fr}
+.grid--3{grid-template-columns:1fr}
+@media (min-width:680px){
+  .grid--2{grid-template-columns:repeat(2,1fr)}
+  .grid--3{grid-template-columns:repeat(2,1fr)}
+}
+@media (min-width:1000px){
+  .grid--3{grid-template-columns:repeat(3,1fr)}
+}
+
+/* TL;DR */
+.tldr{background:var(--ink); color:var(--paper); border:var(--border); box-shadow:var(--shadow); padding:clamp(20px,3vw,32px)}
+.tldr ol{margin:0; padding:0; list-style:none; counter-reset:t; display:grid; gap:14px}
+.tldr li{counter-increment:t; display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:start; font-size:clamp(1rem,2vw,1.18rem); border-bottom:1px dashed rgba(244,241,232,.28); padding-bottom:14px}
+.tldr li:last-child{border-bottom:0; padding-bottom:0}
+.tldr li::before{
+  content:counter(t,decimal-leading-zero); font-family:var(--display); font-size:1.35rem; color:var(--yellow); line-height:1;
+}
+.tldr b{color:var(--yellow)}
+
+/* DELIVERABLES */
+.deliverables{display:grid; gap:0; border:var(--border); background:#fff; box-shadow:var(--shadow)}
+.deliverable{display:grid; grid-template-columns:auto 1fr; gap:14px; padding:16px; border-bottom:2px solid var(--ink); align-items:start}
+.deliverable:last-child{border-bottom:0}
+.deliverable__num{
+  font-family:var(--display); font-size:1.1rem; width:42px; height:42px; display:grid; place-items:center;
+  background:var(--yellow); border:2px solid var(--ink); flex:none;
+}
+.deliverable h3{margin:0 0 .25em; font-family:var(--display); text-transform:uppercase; font-size:1.02rem; letter-spacing:-.01em}
+.deliverable p{margin:0; font-size:.96rem}
+.deliverable .file{font-family:var(--mono); font-size:.78rem; background:var(--grey); padding:1px 5px; border:1px solid var(--ink); display:inline-block; margin-top:6px}
+
+/* FASES / TIMELINE */
+.timeline{display:grid; gap:0; border-top:var(--border)}
+.phase{
+  display:grid; border-bottom:2px solid var(--ink); background:#fff;
+}
+.phase__bar{
+  display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:12px;
+  padding:14px 16px; background:var(--paper); border-bottom:2px solid var(--ink); cursor:pointer;
+  font-family:var(--display); text-transform:uppercase; letter-spacing:-.005em; font-size:1.02rem;
+  user-select:none;
+}
+.phase__bar:hover{background:var(--yellow)}
+.phase__num{font-family:var(--mono); font-size:.74rem; letter-spacing:.16em; background:var(--ink); color:var(--yellow); padding:4px 7px}
+.phase__time{font-family:var(--mono); font-size:.72rem; letter-spacing:.1em; opacity:.75; white-space:nowrap}
+.phase__body{padding:16px; display:none}
+.phase[open] > .phase__body{display:block}
+.phase__body p{margin:0 0 10px}
+.phase__body ul{margin:0 0 10px; padding-left:1.15em}
+.phase__body li{margin-bottom:6px}
+.klaar{
+  border-left:6px solid var(--red); background:#fff8f5; padding:10px 12px; font-size:.94rem; margin-top:6px;
+}
+.klaar b{font-family:var(--mono); font-size:.74rem; letter-spacing:.13em; text-transform:uppercase; display:block; margin-bottom:2px; color:var(--red)}
+
+/* CHECKLIST */
+.checklist{border:var(--border); background:#fff; box-shadow:var(--shadow)}
+.checklist__group{border-bottom:2px solid var(--ink); padding:16px}
+.checklist__group:last-child{border-bottom:0}
+.checklist__group h3{font-family:var(--mono); font-size:.78rem; letter-spacing:.16em; text-transform:uppercase; margin:0 0 12px; display:flex; gap:8px; align-items:center}
+.checklist__group h3::before{content:"▚"; color:var(--red)}
+.item{display:grid; grid-template-columns:auto 1fr; gap:11px; align-items:start; padding:8px 0; border-top:1px dashed var(--grey); cursor:pointer}
+.item:first-of-type{border-top:0}
+.item input{
+  appearance:none; -webkit-appearance:none; width:22px; height:22px; margin:2px 0 0;
+  border:3px solid var(--ink); background:var(--paper); display:grid; place-items:center; cursor:pointer; flex:none;
+}
+.item input:checked{background:var(--green)}
+.item input:checked::after{content:"✕"; color:#fff; font-family:var(--mono); font-size:.9rem; font-weight:700; line-height:1}
+.item input:checked + span{text-decoration:line-through; opacity:.55}
+.item span{font-size:.97rem}
+.item small{display:block; font-family:var(--mono); font-size:.76rem; opacity:.7; margin-top:2px}
+
+/* TABLE */
+.table-wrap{overflow-x:auto; border:var(--border); background:#fff; box-shadow:var(--shadow)}
+table{border-collapse:collapse; width:100%; min-width:560px; font-size:.94rem}
+caption{text-align:left; font-family:var(--mono); font-size:.76rem; letter-spacing:.14em; text-transform:uppercase; padding:10px 12px; border-bottom:2px solid var(--ink); background:var(--yellow)}
+th,td{border-bottom:2px solid var(--ink); border-right:2px solid var(--ink); padding:10px 12px; text-align:left; vertical-align:top}
+tr:last-child td{border-bottom:0}
+th:last-child, td:last-child{border-right:0}
+thead th{background:var(--ink); color:var(--paper); font-family:var(--mono); font-size:.74rem; letter-spacing:.12em; text-transform:uppercase}
+tbody tr:nth-child(even){background:#FBFAF5}
+td strong{background:var(--yellow); box-shadow:0 0 0 2px var(--yellow)}
+
+/* BREAKPOINTS */
+.bp{display:grid; gap:18px; grid-template-columns:1fr}
+.bp__card{border:var(--border); background:#fff; box-shadow:var(--shadow-sm); padding:0; overflow:hidden}
+.bp__top{background:var(--ink); color:var(--paper); padding:12px 14px; display:flex; justify-content:space-between; align-items:center; gap:10px; font-family:var(--mono); font-size:.76rem; letter-spacing:.1em; text-transform:uppercase}
+.bp__top b{color:var(--yellow); font-size:.92rem}
+.bp__body{padding:14px}
+.bp__body ul{margin:0; padding-left:1.1em; font-size:.94rem}
+.bp__body li{margin-bottom:6px}
+@media (min-width:820px){ .bp{grid-template-columns:repeat(3,1fr)} }
+
+/* PEER */
+.peer-steps{display:grid; gap:18px; counter-reset:p}
+@media (min-width:820px){ .peer-steps{grid-template-columns:repeat(3,1fr)} }
+.peer-step{border:var(--border); background:#fff; box-shadow:var(--shadow-sm); padding:16px; position:relative}
+.peer-step::before{
+  counter-increment:p; content:counter(p); position:absolute; top:-16px; left:14px;
+  width:34px; height:34px; display:grid; place-items:center; background:var(--red); color:#fff;
+  border:3px solid var(--ink); font-family:var(--display); font-size:1rem;
+}
+.peer-step h3{font-family:var(--display); text-transform:uppercase; font-size:1rem; margin:14px 0 .4em}
+.peer-step p{margin:0; font-size:.94rem}
+
+.feedback-form{border:var(--border); background:#fff; box-shadow:var(--shadow); padding:0; overflow:hidden}
+.feedback-form__head{background:var(--blue); color:#fff; padding:14px 16px; display:flex; flex-wrap:wrap; gap:8px 16px; justify-content:space-between; align-items:center}
+.feedback-form__head h3{margin:0; font-family:var(--display); text-transform:uppercase; font-size:1.05rem}
+.feedback-form__body{padding:16px}
+.feedback-form .row{display:grid; gap:10px; padding:12px 0; border-bottom:1px dashed var(--grey)}
+.feedback-form .row:last-child{border-bottom:0}
+.feedback-form .label{font-family:var(--mono); font-size:.75rem; letter-spacing:.12em; text-transform:uppercase}
+.feedback-form .lines{display:grid; gap:14px; margin-top:6px}
+.feedback-form .line{border-bottom:2px dotted #9c9c9c; height:1.3em}
+.scale{display:flex; gap:6px; flex-wrap:wrap}
+.scale span{width:30px; height:30px; border:2px solid var(--ink); display:grid; place-items:center; font-family:var(--mono); font-size:.8rem; background:var(--paper)}
+
+/* CODE */
+.code-block{
+  border:var(--border); background:var(--ink); color:#EDEDED; box-shadow:var(--shadow);
+  overflow:hidden; margin:0;
+}
+.code-block__bar{
+  background:var(--yellow); color:var(--ink); border-bottom:3px solid var(--ink);
+  font-family:var(--mono); font-size:.74rem; letter-spacing:.14em; text-transform:uppercase;
+  padding:8px 12px; display:flex; justify-content:space-between; gap:10px; align-items:center;
+}
+.code-block pre{
+  margin:0; padding:16px; overflow-x:auto; font-family:var(--mono); font-size:.82rem; line-height:1.6;
+  tab-size:2;
+}
+.code-block code{font-family:inherit}
+.tok-tag{color:#9BE58A}
+.tok-attr{color:#FFD479}
+.tok-str{color:#8FD3FF}
+.tok-com{color:#8A8A8A; font-style:italic}
+.tok-prop{color:#FF9B7A}
+.tok-sel{color:#FFE500}
+
+/* STEPS */
+ol.steps{list-style:none; counter-reset:s; padding:0; margin:0; display:grid; gap:14px}
+ol.steps > li{counter-increment:s; display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:start}
+ol.steps > li::before{
+  content:counter(s); width:30px; height:30px; flex:none; display:grid; place-items:center;
+  background:var(--ink); color:var(--yellow); font-family:var(--display); font-size:.9rem; border:2px solid var(--ink);
+}
+ol.steps > li > div > b{display:block; font-family:var(--display); text-transform:uppercase; font-size:.98rem; letter-spacing:-.005em; margin-bottom:2px}
+ol.steps > li > div > p{margin:0; font-size:.95rem}
+ol.steps > li > div > p + p{margin-top:6px}
+
+/* CALLOUTS */
+.callout{border:var(--border); box-shadow:var(--shadow-sm); padding:14px 16px; display:grid; grid-template-columns:auto 1fr; gap:12px; align-items:start; background:#fff}
+.callout__ico{font-family:var(--display); font-size:1.3rem; line-height:1; background:var(--yellow); border:2px solid var(--ink); width:34px; height:34px; display:grid; place-items:center}
+.callout--warn{background:#FFF3B8}
+.callout--warn .callout__ico{background:var(--red); color:#fff}
+.callout--ok{background:#E8FBF1}
+.callout--ok .callout__ico{background:var(--green); color:#fff}
+.callout p{margin:0; font-size:.96rem}
+.callout p + p{margin-top:8px}
+.callout b{font-family:var(--mono); font-size:.78rem; letter-spacing:.1em; text-transform:uppercase; display:block; margin-bottom:2px}
+
+/* RESOURCE LINKS */
+.res-list{display:grid; gap:14px}
+.res{
+  display:grid; grid-template-columns:auto 1fr; gap:14px; align-items:start;
+  border:var(--border); background:#fff; box-shadow:var(--shadow-sm); padding:14px; text-decoration:none;
+}
+.res:hover{background:var(--yellow); box-shadow:var(--shadow); transform:translate(-2px,-2px)}
+.res__ico{
+  width:44px; height:44px; display:grid; place-items:center; border:2px solid var(--ink);
+  font-family:var(--mono); font-weight:700; font-size:.66rem; letter-spacing:0; text-align:center; line-height:1.05;
+  background:var(--yellow); flex:none;
+}
+.res h3{margin:0 0 3px; font-family:var(--display); text-transform:uppercase; font-size:1rem; letter-spacing:-.005em}
+.res p{margin:0; font-size:.9rem}
+.res .url{font-family:var(--mono); font-size:.74rem; word-break:break-all; opacity:.72; display:block; margin-top:5px}
+
+/* FAQ */
+details.faq{border:var(--border); background:#fff; box-shadow:var(--shadow-sm); margin-bottom:12px}
+details.faq summary{
+  cursor:pointer; padding:14px 16px; font-family:var(--display); text-transform:uppercase; font-size:1rem;
+  display:flex; justify-content:space-between; gap:12px; align-items:center; list-style:none;
+}
+details.faq summary::-webkit-details-marker{display:none}
+details.faq summary::after{content:"+"; font-family:var(--mono); font-size:1.3rem; border:2px solid var(--ink); width:26px; height:26px; display:grid; place-items:center; flex:none; background:var(--yellow)}
+details.faq[open] summary::after{content:"–"}
+details.faq summary:hover{background:var(--yellow)}
+details.faq .faq__body{padding:0 16px 16px; font-size:.96rem; border-top:2px solid var(--ink); padding-top:12px}
+details.faq .faq__body p{margin:0 0 10px}
+details.faq .faq__body p:last-child{margin:0}
+
+/* RUBRIC BARS */
+.rubric{display:grid; gap:0; border:var(--border); background:#fff; box-shadow:var(--shadow)}
+.rubric__row{display:grid; grid-template-columns:1fr auto; gap:6px 14px; padding:14px 16px; border-bottom:2px solid var(--ink); align-items:center}
+.rubric__row:last-child{border-bottom:0}
+.rubric__name{font-family:var(--display); text-transform:uppercase; font-size:.98rem; letter-spacing:-.005em}
+.rubric__name small{display:block; font-family:var(--sans); text-transform:none; letter-spacing:0; font-size:.84rem; opacity:.72; margin-top:2px}
+.rubric__pts{font-family:var(--display); font-size:1.5rem; background:var(--yellow); border:2px solid var(--ink); padding:2px 10px; line-height:1.2}
+.rubric__bar{grid-column:1 / -1; height:10px; border:2px solid var(--ink); background:var(--grey); position:relative}
+.rubric__bar i{display:block; height:100%; background:var(--red)}
+
+/* CTA BANNER */
+.cta-banner{background:var(--yellow); border:var(--border); box-shadow:var(--shadow); padding:clamp(20px,4vw,42px); display:grid; gap:18px; align-items:center}
+.cta-banner h2{font-size:clamp(1.6rem,5vw,3rem)}
+.cta-banner p{margin:0; max-width:56ch}
+@media (min-width:900px){ .cta-banner{grid-template-columns:1.4fr .8fr; justify-items:end} }
+
+/* FOOTER */
+footer{background:var(--ink); color:var(--paper); padding:clamp(30px,5vw,60px) 0 26px}
+footer a{color:var(--yellow)}
+footer .foot-grid{display:grid; gap:26px}
+@media (min-width:820px){ footer .foot-grid{grid-template-columns:1.3fr 1fr 1fr} }
+footer h4{font-family:var(--mono); font-size:.74rem; letter-spacing:.18em; text-transform:uppercase; color:var(--yellow); margin:0 0 10px}
+footer ul{list-style:none; margin:0; padding:0; display:grid; gap:7px; font-size:.92rem}
+footer .foot-title{font-family:var(--display); text-transform:uppercase; font-size:clamp(1.5rem,4vw,2.4rem); line-height:.92; letter-spacing:-.035em; margin:0 0 12px}
+footer .foot-note{border-top:2px solid rgba(244,241,232,.25); margin-top:26px; padding-top:16px; font-family:var(--mono); font-size:.74rem; letter-spacing:.08em; display:flex; flex-wrap:wrap; gap:8px 20px; justify-content:space-between; text-transform:uppercase}
+
+/* UTIL */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.skip{position:absolute; left:-9999px; top:0; z-index:99; background:var(--yellow); border:var(--border); padding:10px 14px; font-family:var(--mono)}
+.skip:focus{left:8px; top:8px}
+.mt-0{margin-top:0}.mt-1{margin-top:12px}.mt-2{margin-top:22px}.mt-3{margin-top:34px}
+.pill{display:inline-block; font-family:var(--mono); font-size:.7rem; text-transform:uppercase; letter-spacing:.12em; border:2px solid var(--ink); padding:2px 7px; background:var(--paper); margin:0 4px 4px 0}
+.pill--red{background:var(--red); color:#fff}
+.pill--green{background:var(--green); color:#fff}
+.stamp{
+  display:inline-block; font-family:var(--mono); font-size:.72rem; letter-spacing:.16em; text-transform:uppercase;
+  border:3px solid var(--red); color:var(--red); padding:8px 12px; transform:rotate(-3deg); background:#fff;
+}
+hr.brutal{border:0; border-top:var(--border); margin:26px 0}
+
+/* PRINT */
+@media print{
+  body{background:#fff; font-size:11pt}
+  .site-header,.topbar,.marquee,.menu-toggle,.btn,footer{display:none !important}
+  section{border-bottom:1px solid #999; padding:16px 0; break-inside:avoid}
+  .phase__body{display:block !important}
+  .card,.checklist,.table-wrap,.code-block{box-shadow:none}
+  a::after{content:" (" attr(href) ")"; font-family:var(--mono); font-size:8pt; word-break:break-all}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Naar de inhoud</a>
+
+<div class="topbar">
+  <div class="wrap">
+    <span><b>6CM</b> · CODING · WEB DEVELOPMENT</span>
+    <span>FINALE OPDRACHT · <b>PORTFOLIO WEBSITE</b></span>
+    <span>VERSIE 1.1 · 2026</span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="#top">
+      <span class="brand__mark" aria-hidden="true">6CM</span>
+      <span class="brand__txt">Portfolio<br>Website<span>FINALE OPDRACHT</span></span>
+    </a>
+    <button class="menu-toggle" aria-expanded="false" aria-controls="hoofdmenu" type="button">
+      <span class="menu-toggle__label">Menu</span>
+      <span class="menu-toggle__bars" aria-hidden="true"></span>
+    </button>
+    <nav class="nav" id="hoofdmenu" aria-label="Hoofdnavigatie">
+      <ul class="nav__list">
+        <li><a href="#opdracht">Opdracht</a></li>
+        <li><a href="#fasen">Fasen</a></li>
+        <li><a href="#eisen">Eisen</a></li>
+        <li><a href="#ontwerp">Figma</a></li>
+        <li><a href="#peer">Peer</a></li>
+        <li><a href="#code">Code</a></li>
+        <li><a href="#nav-cursus">Mini-cursussen</a></li>
+        <li><a href="#rubriek">Rubriek</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">
+    <span>FIGMA EERST · DAN CODE ✳ WERKT NIET OP GSM = NIET AF ✳ 3 SCHERMEN: DESKTOP / TABLET / SMARTPHONE ✳ EIGEN WERK, EIGEN BEELD, EIGEN VIDEO ✳ MOBILE MENU ✳ MASONRY GRID ✳ PROJECTDETAILPAGINA OP JS</span>
+    <span>FIGMA EERST · DAN CODE ✳ WERKT NIET OP GSM = NIET AF ✳ 3 SCHERMEN: DESKTOP / TABLET / SMARTPHONE ✳ EIGEN WERK, EIGEN BEELD, EIGEN VIDEO ✳ MOBILE MENU ✳ MASONRY GRID ✳ PROJECTDETAILPAGINA OP JS</span>
+  </div>
+</div>
+
+<main id="main">
+<div id="top"></div>
+
+<!-- ============ HERO ============ -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap">
+    <div class="hero__grid">
+      <div>
+        <div class="hero__kicker">
+          <span class="tag tag--red">FINALE OPDRACHT</span>
+          <span class="tag">WEB DEVELOPMENT</span>
+          <span class="tag tag--yellow">INDIVIDUEEL WERK</span>
+        </div>
+        <h1 class="hero__title" id="hero-title">JOUW<br>WERK.<br><em>JOUW</em> SITE.</h1>
+        <p class="hero__lead">
+          Je ontwerpt en bouwt je eigen <strong>portfolio website</strong>: één plek waar je schoolwerk,
+          grafisch werk, foto's en video's samenkomen. Eerst denk je na en ontwerp je in Figma — in
+          <strong>drie versies</strong> voor drie schermen. Dan pas schrijf je code. En omdat je trots mag
+          zijn op wat je maakt, zet je het ook echt online.
+        </p>
+        <div class="btn-row">
+          <a class="btn" href="#opdracht">Lees de opdracht →</a>
+          <a class="btn btn--ghost" href="#eisen">Naar de checklist</a>
+        </div>
+      </div>
+
+      <dl class="factsheet">
+        <div><dt class="k">Vak</dt><dd class="v" style="margin:0">Coding · Web</dd></div>
+        <div><dt class="k">Klas</dt><dd class="v" style="margin:0">6CM</dd></div>
+        <div><dt class="k">Vorm</dt><dd class="v" style="margin:0">Individueel</dd></div>
+        <div><dt class="k">Doorlooptijd</dt><dd class="v" style="margin:0">8 lesblokken</dd></div>
+        <div><dt class="k">Design</dt><dd class="v" style="margin:0">Figma · 3 frames</dd></div>
+        <div><dt class="k">Code</dt><dd class="v" style="margin:0">HTML / CSS / JS</dd></div>
+        <div><dt class="k">Peer evaluatie</dt><dd class="v" style="margin:0">Les 4</dd></div>
+        <div><dt class="k">Indienen</dt><dd class="v" style="margin:0">Via GitHub</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DE OPDRACHT ============ -->
+<section id="opdracht" aria-labelledby="t-opdracht">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">01 — De opdracht</span>
+      <h2 id="t-opdracht">In 6 lijnen</h2>
+      <p class="sec-intro sec-intro--big">Vat je de opdracht samen voor iemand die niets van het vak kent, dan zeg je dit:</p>
+    </div>
+
+    <div class="tldr">
+      <ol>
+        <li>Je maakt een <b>portfolio website</b> over jezelf, waarin je je schoolwerk en ander grafisch werk toont.</li>
+        <li>Je begint met <b>research en een moodboard</b>: naar welke sites kijk je graag, en waarom?</li>
+        <li>Je ontwerpt in <b>Figma</b> — drie versies: <b>desktop</b>, <b>tablet</b>, <b>smartphone</b>.</li>
+        <li>We doen een <b>peer evaluatie</b> in de klas: jij geeft feedback, je krijgt feedback en je verwerkt die.</li>
+        <li>Je bouwt de site met <b>HTML, CSS en een beetje JavaScript</b>. Responsive, met eigen afbeeldingen, minstens één eigen video, een werkend contactformulier en een footer.</li>
+        <li>Je <b>test, valideert en presenteert</b>. Je kan elke regel code uitleggen. Klaar = online.</li>
+      </ol>
+    </div>
+
+    <div class="grid grid--3 mt-3">
+      <div class="card card--yellow">
+        <h3>Wat is "grafisch werk"?</h3>
+        <p style="margin:0">Alles wat je visueel maakte in je schoolcarrière: posters, logo's, illustraties, foto's, mock-ups, 3D-renders, UI-schetsen, magazinespreads, animaties, storyboards. Ook werk uit vorige jaren en uit je vrije tijd.</p>
+      </div>
+      <div class="card">
+        <h3>Waarom een portfolio?</h3>
+        <p style="margin:0">Een portfolio is je visitekaartje: voor een stageplaats, een vervolgopleiding of een freelancerklant. Het toont niet alleen <em>wat</em> je maakt, maar ook <em>hoe</em> je denkt. Dit is dus geen oefening — dit is je eerste echte online profiel.</p>
+      </div>
+      <div class="card">
+        <h3>Wat telt als "af"?</h3>
+        <p style="margin:0">Een site zonder Figma-ontwerp is niet af. Een Figma-ontwerp zonder code is niet af. Een site die alleen op jouw laptopscherm werkt, is niet af. Alle drie de onderdelen tellen mee in je punt.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DELIVERABLES ============ -->
+<section aria-labelledby="t-lever">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">02 — Wat lever je op?</span>
+      <h2 id="t-lever">Vijf deliverables</h2>
+      <p class="sec-intro">Alles komt samen in <strong>één GitHub-repository</strong>: <span class="mono" style="background:var(--grey);border:1px solid var(--ink);padding:1px 5px">6cm-portfolio-voornaam</span>. Je levert in door de link naar die repository te bezorgen, met je site gepubliceerd via GitHub Pages. Ontbreekt er iets? Dan ontbreekt dat deel van je punten.</p>
+    </div>
+
+    <div class="callout callout--ok" style="margin-bottom:18px">
+      <div class="callout__ico" aria-hidden="true">⌥</div>
+      <div>
+        <b>Alles in één repository</b>
+        <p>Je levert in via <strong>GitHub</strong>. Alles wat je hieronder ziet, komt in dezelfde repository: je code in de root, je Figma-link en feedback in <span class="mono">/design</span>, je reflectie als <span class="mono">reflectie.md</span> naast je <span class="mono">index.html</span>. Eén link, één controle, geen zoekwerk.</p>
+      </div>
+    </div>
+
+    <div class="deliverables">
+      <div class="deliverable">
+        <span class="deliverable__num" aria-hidden="true">01</span>
+        <div>
+          <h3>Figma-bestand met 3 frames</h3>
+          <p>Zet je Figma-ontwerp in je repository: ofwel als <span class="mono">design/portfolio.fig</span>, ofwel als <span class="mono">design/link.md</span> met de deelbare Figma-link (rechten op "kan bekijken") plus je screenshots. Eén Figma Design-bestand met duidelijke paginanamen (bv. <em>00 · Cover</em>, <em>01 · Desktop</em>, <em>02 · Tablet</em>, <em>03 · Smartphone</em>, <em>04 · Componenten</em>).</p>
+          <span class="file">/design/ figma-link of .fig</span>
+        </div>
+      </div>
+      <div class="deliverable">
+        <span class="deliverable__num" aria-hidden="true">02</span>
+        <div>
+          <h3>Verwerkte peerfeedback</h3>
+          <p>Het ingevulde feedbackformulier dat je kreeg, plus een kort overzichtje: welke 3 punten heb je aangepast, en waarom (of waarom net niet). Eén Markdown-bestand is genoeg.</p>
+          <span class="file">/design/feedback.md</span>
+        </div>
+      </div>
+      <div class="deliverable">
+        <span class="deliverable__num" aria-hidden="true">03</span>
+        <div>
+          <h3>De werkende website</h3>
+          <p>Alle bestanden in je repository: <span class="mono">index.html</span>, je projectdetailpagina('s), CSS in een apart bestand, JS in een apart bestand, en een map <span class="mono">/assets</span> voor beeld en video. Geen zip-chaos, geen losse bestanden op het bureaublad — en alles gecommit, niet enkel lokaal op je schijf.</p>
+          <span class="file">/index.html · /css · /js · /assets</span>
+        </div>
+      </div>
+      <div class="deliverable">
+        <span class="deliverable__num" aria-hidden="true">04</span>
+        <div>
+          <h3>Online versie via GitHub Pages (verplicht)</h3>
+          <p>Je repository zet je online met <strong>GitHub Pages</strong> (Settings → Pages → Deploy from a branch). Je site staat dan op <span class="mono">https://jouwgebruikersnaam.github.io/6cm-portfolio-voornaam/</span>. Die link test je in een incognitovenster. Een andere host mag, maar dan staat je code alsnog in GitHub.</p>
+          <span class="file">https://gebruikersnaam.github.io/6cm-portfolio-voornaam/</span>
+        </div>
+      </div>
+      <div class="deliverable">
+        <span class="deliverable__num" aria-hidden="true">05</span>
+        <div>
+          <h3>Korte reflectie (max. 1 pagina)</h3>
+          <p>Wat was je plan, wat liep mis, wat heb je opgelost, wat zou je anders doen met twee extra weken? Wees concreet: "het was moeilijk" is geen reflectie, "mijn grid zakte in elkaar omdat ik <span class="mono">grid-template-columns</span> op de verkeerde container zette" wel.</p>
+          <span class="file">/reflectie.md</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card card--ink mt-2" style="box-shadow:var(--shadow)">
+      <h3>Inleveren via GitHub — zo werkt het</h3>
+      <ol style="margin:0 0 12px;padding-left:1.2em">
+        <li>Maak een <strong>publieke repository</strong> aan met de naam <span class="mono" style="color:var(--yellow)">6cm-portfolio-voornaam</span>.</li>
+        <li>Clone hem lokaal, zet je project erin en <strong>commit</strong> minstens na elke werkdag. Je commitgeschiedenis is je procesbewijs.</li>
+        <li>Zet GitHub Pages aan: Settings → Pages → Deploy from a branch → <span class="mono">main</span> / <span class="mono">root</span>.</li>
+        <li>Test de online link in een incognitovenster én op je gsm.</li>
+        <li>Bezorg de leerkracht je <strong>repositorylink</strong> én je <strong>Pages-link</strong>, met in de README je naam, klas en de link naar je Figma-ontwerp.</li>
+      </ol>
+      <p style="margin:0;font-size:.95rem">Let op: je repository moet openbaar staan, anders kan je werk niet bekeken of beoordeeld worden. De leerkracht kijkt ook naar je commits — een repository met één commit van 200 bestanden vertelt niets over je proces.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FASEN ============ -->
+<section id="fasen" aria-labelledby="t-fasen">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">03 — Stappenplan</span>
+      <h2 id="t-fasen">Acht fasen, één site</h2>
+      <p class="sec-intro">Klik een fase open. Elke fase heeft een tijdsinschatting en een duidelijke <strong>"klaar als…"</strong>. Werk je sneller? Ga verder. Werk je trager? Dan weet je meteen waar je achterloopt.</p>
+    </div>
+
+    <div class="timeline">
+      <details class="phase" open>
+        <summary class="phase__bar"><span class="phase__num">FASE 00</span><span>Kick-off &amp; research</span><span class="phase__time">± 45 min</span></summary>
+        <div class="phase__body">
+          <p>Voor je één pixel tekent, kijk je rond. Verzamel <strong>minstens 5 portfolio-sites</strong> die je sterk vindt en <strong>3</strong> die je zwak vindt.</p>
+          <ul>
+            <li>Maak een FigJam of een pagina in je Figma-bestand: per site een screenshot + 2 regels uitleg (wat werkt, wat niet).</li>
+            <li>Maak een moodboard: kleuren, typografie, sfeer, texturen. Minstens 12 beelden.</li>
+            <li>Schrijf je <strong>one-liner</strong> op: in één zin, wat maakt jouw werk bijzonder? Die zin komt in je jumbotron.</li>
+            <li>Volg de <strong><a href="#ontwerp">Figma-beginnerscursus</a></strong> (verplicht, ± 1,5 uur) vóór je aan fase 02 begint.</li>
+          </ul>
+          <div class="klaar"><b>Klaar als…</b> je 8 sites hebt geanalyseerd, een moodboard hebt en je one-liner op papier staat.</div>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary class="phase__bar"><span class="phase__num">FASE 01</span><span>Content verzamelen</span><span class="phase__time">± 60 min</span></summary>
+        <div class="phase__body">
+          <p>Een portfolio zonder werk is een lege kast. Verzamel je materiaal <em>vóór</em> je gaat ontwerpen — anders ontwerp je voor gaten.</p>
+          <ul>
+            <li><strong>Minstens 6 werken</strong> voor je portfolio, waarvan minstens <strong>3 met een eigen projectdetailpagina</strong>.</li>
+            <li>Per werk: titel, jaar, opdracht/tools, korte beschrijving (2–4 zinnen) en 1–4 beelden.</li>
+            <li><strong>Eén video</strong> die je zelf maakte tijdens je schooljaren (animatie, montage, motion design, behind-the-scenes). Max. 60 seconden, onder 25 MB.</li>
+            <li>Een profielfoto of een zelfportret/illustratie van jezelf voor het "over mij"-deel.</li>
+          </ul>
+          <div class="klaar"><b>Klaar als…</b> je een map <span class="mono">/content</span> hebt met alle beelden, je video en een tekstbestand met alle titels en beschrijvingen.</div>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary class="phase__bar"><span class="phase__num">FASE 02</span><span>Figma: wireframe → 3 ontwerpen</span><span class="phase__time">± 3 lesblokken</span></summary>
+        <div class="phase__body">
+          <p>Je werkt <strong>mobile first</strong>: eerst het kleinste scherm, dan groter. Zo dwing je jezelf om prioriteiten te stellen.</p>
+          <ul>
+            <li><strong>Stap 1 — Wireframe (grijs, geen kleur):</strong> drie frames naast elkaar, alleen kaders en blokken. Hier bepaal je de structuur, niet de look.</li>
+            <li><strong>Stap 2 — Systeem:</strong> kies je kleurenpalet (max. 4 kleuren), twee lettertypes, een type-scale en een spacing-schaal van 8px.</li>
+            <li><strong>Stap 3 — High fidelity:</strong> werk de drie frames volledig uit met echte content. Gebruik <em>Auto Layout</em>, <em>Components</em> en <em>Variants</em> — niet alles met de hand.</li>
+            <li><strong>Stap 4 — Prototype:</strong> koppel minstens de navigatie en het mobiele menu, zodat je kan doorklikken.</li>
+          </ul>
+          <div class="klaar"><b>Klaar als…</b> je drie frames hebt (1440 / 768 / 390 px breed) die samen één samenhangend ontwerp vormen, een componentenbibliotheek hebt en je kan doorklikken in presentatiemodus.</div>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary class="phase__bar"><span class="phase__num">FASE 03</span><span>Peer evaluatie in de klas</span><span class="phase__time">± 50 min</span></summary>
+        <div class="phase__body">
+          <p>Je design gaat de kamer rond. Drie rondes, telkens met een andere klasgenoot. Je kijkt <em>samen</em> naar het scherm in presentatiemodus en gebruikt het feedbackformulier uit <a href="#peer">deel 06</a>.</p>
+          <ul>
+            <li>Je geeft zelf ook feedback aan 3 anderen. Feedback geven is een vaardigheid die meetelt.</li>
+            <li>Geen "ik vind het mooi". Wel: "de CTA valt weg omdat de achtergrond even fel is als de knop".</li>
+            <li>Na de les kies je <strong>3 aanpassingen</strong> die je écht doorvoert. Je hoeft niet alles te doen — je moet wel kiezen en uitleggen.</li>
+          </ul>
+          <div class="klaar"><b>Klaar als…</b> je 3 formulieren hebt ontvangen, 3 hebt ingevuld, en je top-3 aanpassingen in je Figma-bestand verwerkt zijn.</div>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary class="phase__bar"><span class="phase__num">FASE 04</span><span>Code: structuur &amp; semantiek</span><span class="phase__time">± 2 lesblokken</span></summary>
+        <div class="phase__body">
+          <p>Je start met HTML — deftig, semantisch, zonder <span class="mono">&lt;div class="header"&gt;</span> waar een <span class="mono">&lt;header&gt;</span> hoort.</p>
+          <ul>
+            <li>Zet je bestandsstructuur op en maak je GitHub-repository aan (zie <a href="#code">deel 07</a>).</li>
+            <li>Bouw de volledige inhoud van de homepage, één projectdetailpagina en het contactformulier in HTML.</li>
+            <li>Alle afbeeldingen krijgen een <span class="mono">alt</span>, alle invoervelden een <span class="mono">&lt;label&gt;</span>, koppen gaan in volgorde (één <span class="mono">h1</span> per pagina).</li>
+            <li>Nog géén CSS. Een site die zonder stylesheet logisch leest, is een goede site.</li>
+          </ul>
+          <div class="klaar"><b>Klaar als…</b> je HTML door de validator van W3C geraakt zonder fouten en de pagina zonder CSS nog steeds begrijpelijk is.</div>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary class="phase__bar"><span class="phase__num">FASE 05</span><span>Code: responsive CSS</span><span class="phase__time">± 3 lesblokken</span></summary>
+        <div class="phase__body">
+          <p>Nu komt het echte werk. Je bouwt mobile first en schaalt op met media queries — exact dezelfde drie schermen als in je Figma-ontwerp.</p>
+          <ul>
+            <li>Werk met custom properties (CSS-variabelen) voor kleur, spacing en typografie.</li>
+            <li>Gebruik <strong>Flexbox</strong> voor rijen en <strong>CSS Grid</strong> voor de portfolio-grid.</li>
+            <li>Bouw de <strong>responsive navigatie</strong> volgens mini-cursus <a href="#nav-cursus">07.A</a>.</li>
+            <li><span class="mono">clamp()</span> voor vloeiende typografie, <span class="mono">min()</span>/<span class="mono">max()</span> waar het kan — geen 40 media queries.</li>
+          </ul>
+          <div class="klaar"><b>Klaar als…</b> je site op 390px, 768px en 1440px breed werkt, geen horizontale scrollbalk heeft en er op alle drie uitziet zoals in je ontwerp.</div>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary class="phase__bar"><span class="phase__num">FASE 06</span><span>Beeld, video &amp; formulier</span><span class="phase__time">± 2 lesblokken</span></summary>
+        <div class="phase__body">
+          <p>Media maken of breken je site. Een 8 MB foto is een dode site op een gsm met 3G.</p>
+          <ul>
+            <li>Comprimeer alle beelden: JPG of WebP, max. 1600px breed, streef naar &lt; 300 KB per beeld.</li>
+            <li>Gebruik <span class="mono">srcset</span> en <span class="mono">sizes</span>, plus <span class="mono">loading="lazy"</span> voor alles onder de fold.</li>
+            <li>Plaats je video met <span class="mono">&lt;video&gt;</span> (geen YouTube-embed voor je eigen werk), met een posterbeeld en ondertitels.</li>
+            <li>Maak het contactformulier af: labels, verplichte velden, foutmeldingen, focus-states.</li>
+          </ul>
+          <div class="klaar"><b>Klaar als…</b> je video speelt op een gsm, je pagina onder de 3 MB blijft en je formulier je tegenhoudt als je een veld leeg laat.</div>
+        </div>
+      </details>
+
+      <details class="phase">
+        <summary class="phase__bar"><span class="phase__num">FASE 07</span><span>Testen, valideren, online zetten</span><span class="phase__time">± 1 lesblok</span></summary>
+        <div class="phase__body">
+          <p>Dit is de fase die het verschil maakt tussen een 12 en een 17.</p>
+          <ul>
+            <li><strong>Validatie:</strong> HTML en CSS door de W3C-validators. Los elke fout op.</li>
+            <li><strong>Lighthouse:</strong> draai een audit in Chrome DevTools. Doel: Performance ≥ 85, Accessibility ≥ 90.</li>
+            <li><strong>Toegankelijkheid:</strong> test met alleen je toetsenbord (Tab), check je contrasten (min. 4,5:1) en je alt-teksten.</li>
+            <li><strong>Test op echt materiaal:</strong> open je site op je eigen smartphone. Niet in een verkleind browservenster.</li>
+            <li><strong>Publiceer</strong> via GitHub Pages en test de online link in een incognitovenster.</li>
+            <li><strong>Lever in:</strong> commit alles, push naar GitHub en bezorg je repositorylink én je Pages-link.</li>
+          </ul>
+          <div class="klaar"><b>Klaar als…</b> je 0 validatorfouten hebt, je Lighthouse-scores gehaald zijn, je online link werkt op een toestel dat niet van jou is en je repository up-to-date is gepusht.</div>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EISEN ============ -->
+<section id="eisen" aria-labelledby="t-eisen">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">04 — De checklist</span>
+      <h2 id="t-eisen">Alles wat erin moet</h2>
+      <p class="sec-intro">Dit is geen inspiratielijst, dit is de meetlat. Vink af terwijl je bouwt. Je mag dit blok afdrukken en naast je toetsenbord leggen.</p>
+    </div>
+
+    <div class="checklist">
+      <div class="checklist__group">
+        <h3>Structuur — de blokken van je pagina</h3>
+        <label class="item"><input type="checkbox"><span>Een <strong>header met een jumbotron</strong>: je naam of one-liner in groot formaat, een korte <strong>alternatieve opening</strong> in plaats van "Welkom op mijn website", en één duidelijke <strong>call-to-action</strong> ("Bekijk mijn werk" of "Neem contact op").<small>De CTA moet visueel de belangrijkste knop van je pagina zijn. Zie de tip onderaan deze checklist.</small></span></label>
+        <label class="item"><input type="checkbox"><span>Een <strong>"Over mij"</strong>-deel: wie ben je, wat maak je, welke tools gebruik je, wat wil je leren.<small>Minstens 80 woorden. In de ik-vorm. Geen cv-taal.</small></span></label>
+        <label class="item"><input type="checkbox"><span>Een <strong>portfolio-onderdeel</strong> dat je werk toont in een grid (masonry of editorial grid).<small>Minstens 6 werken, elk met titel en categorie.</small></span></label>
+        <label class="item"><input type="checkbox"><span>Een <strong>projectdetailpagina</strong> die vanuit het grid gelinkt is, met een grotere presentatie van het werk: titel, jaar, tools, je rol, het verhaal en minstens 3 beelden.<small>Minstens 3 projecten openen op die pagina. Eén gedeelde detailpagina op JS mag (zie 07.C), drie losse pagina's ook.</small></span></label>
+        <label class="item"><input type="checkbox"><span>Een <strong>videoblok</strong> met minstens één video die je zelf maakte.<small>Eigen werk, geen stock. Max. 60 seconden.</small></span></label>
+        <label class="item"><input type="checkbox"><span>Een <strong>contactformulier</strong> met voornaam, e-mail, onderwerp en bericht.<small>Alle velden gelabeld, verplichte velden aangeduid, verzenden werkt of toont een duidelijke melding.</small></span></label>
+        <label class="item"><input type="checkbox"><span>Een <strong>footer</strong> met je naam, het jaar, je socials of e-mail, en links naar je navigatie.<small>Ook op mobiel netjes leesbaar.</small></span></label>
+        <label class="item"><input type="checkbox"><span>Een <strong>navigatie</strong> die op elk scherm bruikbaar is, inclusief een werkend <strong>mobiel menu</strong>.<small>Zie mini-cursus 07.A.</small></span></label>
+        <label class="item"><input type="checkbox"><span><strong>Geen "Welkom"-tekst</strong> in je header of jumbotron, en geen variant ervan ("Welkom op mijn portfolio", "Hallo en welkom!").<small>Schrijf in plaats daarvan een openingszin die alleen over jouw werk kan gaan.</small></span></label>
+        <label class="item"><input type="checkbox"><span>Je repository staat <strong>openbaar</strong> op GitHub, met GitHub Pages actief en een ingevulde README.<small>Naam, klas, omschrijving en de link naar je Figma-ontwerp.</small></span></label>
+      </div>
+
+      <div class="checklist__group">
+        <h3>Design — uit Figma</h3>
+        <label class="item"><input type="checkbox"><span><strong>Drie frames</strong>: 1440px (desktop), 768px (tablet), 390px (smartphone).<small>Elk frame is effectief 1440/768/390 px breed in Figma, geen geschaalde versie.</small></span></label>
+        <label class="item"><input type="checkbox"><span>Eén <strong>kleurenpalet</strong> (max. 4 kleuren), twee lettertypes, een vaste type-scale.<small>Vastgelegd als Figma Variables of styles.</small></span></label>
+        <label class="item"><input type="checkbox"><span>Gebruik van <strong>Auto Layout</strong> en minstens één <strong>component met varianten</strong>.<small>Bijvoorbeeld de knop of de projectkaart.</small></span></label>
+        <label class="item"><input type="checkbox"><span>Een <strong>klikbaar prototype</strong> van minstens de navigatie.<small>Presenteren = play-knop, niet eindeloos zoomen.</small></span></label>
+      </div>
+
+      <div class="checklist__group">
+        <h3>Techniek — onder de motorkap</h3>
+        <label class="item"><input type="checkbox"><span>Correcte <strong>semantische HTML5</strong>: <span class="mono">header, nav, main, section, article, figure, footer</span>.<small>Validatie zonder fouten.</small></span></label>
+        <label class="item"><input type="checkbox"><span>CSS in een <strong>apart bestand</strong>, geen <span class="mono">style=""</span>-attributen, geen <span class="mono">!important</span>-spaghetti.<small>Custom properties voor kleur en spacing.</small></span></label>
+        <label class="item"><input type="checkbox"><span><strong>Responsive</strong> met minstens 2 media queries die overeenkomen met je ontwerpen.<small>Geen horizontale scroll op 390px.</small></span></label>
+        <label class="item"><input type="checkbox"><span>Afbeeldingen <strong>geoptimaliseerd</strong> met <span class="mono">alt</span>, <span class="mono">width</span>/<span class="mono">height</span> en waar zinvol <span class="mono">srcset</span>/<span class="mono">loading="lazy"</span>.<small>Geen enkel bestand boven 500 KB.</small></span></label>
+        <label class="item"><input type="checkbox"><span>Video via <span class="mono">&lt;video&gt;</span> met <span class="mono">poster</span>, <span class="mono">controls</span> en ondertitels.<small>Ook op een gsm afspelen = getest.</small></span></label>
+        <label class="item"><input type="checkbox"><span><strong>JavaScript</strong> dat echt iets doet: een menu dat open en dicht gaat, een filter in je grid en/of een detailpagina die zijn inhoud uit data haalt.<small>Met commentaar in het Nederlands. Zie de mini-cursussen 07.A en 07.C.</small></span></label>
+        <label class="item"><input type="checkbox"><span><strong>Toegankelijk</strong>: focus-states zichtbaar, contrast ≥ 4,5:1, alles bedienbaar met het toetsenbord.<small>Tab door je hele site zonder vast te lopen.</small></span></label>
+        <label class="item"><input type="checkbox"><span><strong>Online gepubliceerd</strong> met een werkende link.<small>Getest in incognito, op een ander toestel.</small></span></label>
+      </div>
+    </div>
+
+    <div class="card card--yellow mt-2">
+      <h3>Niet "Welkom" — maar dit</h3>
+      <p style="margin:0 0 12px">"Welkom op mijn website" is de meest voorkomende en minst interessante zin op het internet. Iedereen kan hem schrijven, hij zegt niets over jou en hij vult je duurste ruimte: de eerste seconden van je bezoeker. Schrijf iets dat <strong>alleen over jouw werk kan gaan</strong>. Kies één van deze vijf vertrekpunten:</p>
+      <div class="grid grid--2" style="gap:14px">
+        <div style="border:2px solid var(--ink);background:#fff;padding:12px">
+          <p class="mono" style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px">1 · De claim</p>
+          <p style="margin:0;font-size:.95rem">"Ik maak posters die je van de gangmuren plukt."</p>
+        </div>
+        <div style="border:2px solid var(--ink);background:#fff;padding:12px">
+          <p class="mono" style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px">2 · De vraag</p>
+          <p style="margin:0;font-size:.95rem">"Wat gebeurt er als je een affiche in drie seconden moet begrijpen?"</p>
+        </div>
+        <div style="border:2px solid var(--ink);background:#fff;padding:12px">
+          <p class="mono" style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px">3 · Het getal</p>
+          <p style="margin:0;font-size:.95rem">"Zeventien posters, vier jaar, één stylo die het overleefde."</p>
+        </div>
+        <div style="border:2px solid var(--ink);background:#fff;padding:12px">
+          <p class="mono" style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px">4 · Het statement</p>
+          <p style="margin:0;font-size:.95rem">"Zwart-wit, veel lawaai, geen logo in een cirkel."</p>
+        </div>
+        <div style="border:2px solid var(--ink);background:#fff;padding:12px">
+          <p class="mono" style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px">5 · De beschrijving</p>
+          <p style="margin:0;font-size:.95rem">"Twaalf maanden beeld: foto's, posters en één mislukte 3D-render die ik toch toon."</p>
+        </div>
+        <div style="border:2px solid var(--ink);background:var(--ink);color:var(--paper);padding:12px">
+          <p class="mono" style="font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 6px;color:var(--yellow)">En niet dit</p>
+          <p style="margin:0;font-size:.95rem;text-decoration:line-through;opacity:.8">"Welkom op mijn portfolio website! Ik ben een student en ik hou van design."</p>
+        </div>
+      </div>
+      <p style="margin:12px 0 0;font-size:.95rem">Je zin moet ook werken als jumbotron: kort genoeg om groot te zetten, concreet genoeg om te blijven hangen. Test hem op je buur: als die meteen kan zeggen over wie het gaat, zit je goed.</p>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;margin:32px 0 12px;font-size:1.2rem">De drie breakpoints</h3>
+    <div class="bp">
+      <div class="bp__card">
+        <div class="bp__top"><span>Smartphone</span><b>390 px</b></div>
+        <div class="bp__body">
+          <ul>
+            <li>Eén kolom, alles onder elkaar</li>
+            <li>Hamburger-menu (niet zichtbaar op desktop)</li>
+            <li>Grid: 1 kolom, grote beelden</li>
+            <li>Typografie via <span class="mono">clamp()</span>, geen vaste px</li>
+            <li>CTA-knop over volle breedte</li>
+          </ul>
+        </div>
+      </div>
+      <div class="bp__card">
+        <div class="bp__top"><span>Tablet</span><b>768 px</b></div>
+        <div class="bp__body">
+          <ul>
+            <li>Twee kolommen waar het kan</li>
+            <li>Grid: 2 kolommen</li>
+            <li>Navigatie zichtbaar of compact menu</li>
+            <li>Meer witruimte, grotere marges</li>
+            <li>Video over volle breedte</li>
+          </ul>
+        </div>
+      </div>
+      <div class="bp__card">
+        <div class="bp__top"><span>Desktop</span><b>1440 px</b></div>
+        <div class="bp__body">
+          <ul>
+            <li>Container met max. breedte (bv. 1180–1280px)</li>
+            <li>Grid: 3 kolommen, masonry/editorial</li>
+            <li>Volledige horizontale navigatie</li>
+            <li>Eventueel asymmetrische layouts</li>
+            <li>Hover-states voor links en kaarten</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FIGMA ============ -->
+<section id="ontwerp" aria-labelledby="t-ontwerp">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">05 — Ontwerpen in Figma</span>
+      <h2 id="t-ontwerp">Eerst je muis, dan je toetsenbord</h2>
+      <p class="sec-intro">Je ontwerpt in Figma Design (het gratis Starter-plan volstaat — je hebt geen betalende functies nodig voor deze opdracht). Nieuw met Figma? Volg eerst de officiële beginnerscursus hieronder. Die kost je ongeveer 1,5 uur en maakt de rest van de opdracht twee keer zo makkelijk.</p>
+    </div>
+
+    <div class="grid grid--2">
+      <div class="card card--ink">
+        <h3>De officiële Figma-cursus</h3>
+        <p style="margin:0 0 14px">Figma leert je in zijn eigen, gratis cursus <em>"Figma Design for beginners"</em> stap voor stap hoe je frames, Auto Layout, componenten en een klikbaar prototype maakt — inclusief het ontwerpen van een portfolio-website. Reken op een tiental tot twintigtal korte video's.</p>
+        <a class="btn" style="background:var(--yellow);color:var(--ink)" href="https://help.figma.com/hc/en-us/sections/30880632542743-Figma-Design-for-beginners" target="_blank" rel="noopener">Start de Figma-cursus ↗</a>
+        <p class="mono" style="font-size:.74rem;margin:12px 0 0;opacity:.75;word-break:break-all">help.figma.com/hc/en-us/sections/30880632542743-Figma-Design-for-beginners</p>
+      </div>
+
+      <div class="card card--yellow">
+        <h3>Verplichte Figma-skills</h3>
+        <ul style="margin:0;padding-left:1.1em">
+          <li><strong>Frames</strong> met vaste afmetingen (1440 / 768 / 390)</li>
+          <li><strong>Auto Layout</strong> — minstens in je header, kaarten en knoppen</li>
+          <li><strong>Components + Variants</strong> — bv. knop: default / hover / mobile</li>
+          <li><strong>Layout grid</strong> (kolommen + goot) per frame</li>
+          <li><strong>Variables of styles</strong> voor kleur en typografie</li>
+          <li><strong>Prototype-links</strong> tussen je frames</li>
+          <li>Netjes <strong>benoemde lagen</strong> — geen <span class="mono">Frame 427</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;margin:32px 0 12px;font-size:1.2rem">Zo pak je de drie frames aan</h3>
+    <ol class="steps">
+      <li>
+        <div>
+          <b>Begin met het kleinste frame</b>
+          <p>Maak een frame van 390 × 844 (iPhone-formaat). Ontwerp hier je volledige homepage. Alles wat je hier niet kwijt kan, is waarschijnlijk ook niet essentieel.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <b>Schaal op naar tablet</b>
+          <p>Kopieer je mobiele frame naar 768 × 1024 en herbouw de layout. Gebruik Auto Layout zodat blokken zich aanpassen in plaats van ze met de hand te verslepen.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <b>Werk af op desktop</b>
+          <p>Frame van 1440 × 1024. Container max. 1200px breed, met echte marges. Hier mag je experimenteren met een asymmetrische editorial layout voor de portfolio-grid.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <b>Ontwerp ook je projectdetailpagina en je formulier</b>
+          <p>Niet alleen de homepage. Je detailpagina en je contactformulier hebben eigen uitdagingen (leesbaarheid, veldgroottes, focus-states). Ontwerp ze minstens op desktop en mobiel.</p>
+        </div>
+      </li>
+    </ol>
+
+    <div class="callout mt-2">
+      <div class="callout__ico" aria-hidden="true">i</div>
+      <div>
+        <b>Ontwerp wat je kan bouwen</b>
+        <p>Een prachtig Figma-ontwerp met driedimensionale scroll-effecten die je niet kan programmeren, kost je punten bij de code. Houd je ontwerp ambitieus maar <em>haalbaar</em> — en noteer bij twijfel een alternatief in je Figma-bestand.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PEER ============ -->
+<section id="peer" aria-labelledby="t-peer">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">06 — Peer evaluatie</span>
+      <h2 id="t-peer">Drie rondes, drie critici</h2>
+      <p class="sec-intro">Je design wordt in de klas geëvalueerd door je medeleerlingen — vóór je begint te coderen, wanneer aanpassen nog goedkoop is. Je geeft zelf ook drie keer feedback. Dat telt mee in je procesevaluatie.</p>
+    </div>
+
+    <div class="peer-steps">
+      <div class="peer-step">
+        <h3>Ronde 1 · De eerste indruk</h3>
+        <p>Je toont je desktop-frame 15 seconden zonder uitleg. De ander zegt wat hij ziet en onthoudt. Daarna pas jij je bedoeling. <em>Als het verschil groot is, is je hiërarchie niet duidelijk genoeg.</em></p>
+      </div>
+      <div class="peer-step">
+        <h3>Ronde 2 · De drie schermen</h3>
+        <p>Samen doorloop je desktop, tablet en smartphone. De vraag is niet "is het mooi" maar "wat gebeurt er met dit blok als het scherm smaller wordt?"</p>
+      </div>
+      <div class="peer-step">
+        <h3>Ronde 3 · De CTA-test</h3>
+        <p>Je partner moet binnen 5 seconden de belangrijkste knop van je pagina aanwijzen. Kan hij dat niet, dan moet je contrast, grootte of positie herzien.</p>
+      </div>
+    </div>
+
+    <div class="feedback-form mt-2">
+      <div class="feedback-form__head">
+        <h3>Feedbackformulier — print &amp; invullen</h3>
+        <span class="tag" style="box-shadow:none">3 rondes × 1 formulier</span>
+      </div>
+      <div class="feedback-form__body">
+        <div class="row">
+          <span class="label">Ontwerper</span>
+          <div class="line"></div>
+        </div>
+        <div class="row">
+          <span class="label">Feedbackgever</span>
+          <div class="line"></div>
+        </div>
+        <div class="row">
+          <span class="label">1 · Wat werkt echt goed? (2 punten)</span>
+          <div class="lines"><div class="line"></div><div class="line"></div></div>
+        </div>
+        <div class="row">
+          <span class="label">2 · Waar haak ik af als bezoeker? (2 punten)</span>
+          <div class="lines"><div class="line"></div><div class="line"></div></div>
+        </div>
+        <div class="row">
+          <span class="label">3 · De belangrijkste CTA — vond ik meteen?</span>
+          <div class="scale" role="img" aria-label="Schaal van 1 tot 5">
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+          </div>
+        </div>
+        <div class="row">
+          <span class="label">4 · Leest de mobiele versie logisch?</span>
+          <div class="scale" role="img" aria-label="Schaal van 1 tot 5">
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+          </div>
+        </div>
+        <div class="row">
+          <span class="label">5 · Eén concrete aanpassing die ik zou doen</span>
+          <div class="lines"><div class="line"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout--ok mt-2">
+      <div class="callout__ico" aria-hidden="true">✓</div>
+      <div>
+        <b>Na de les: kies en verantwoord</b>
+        <p>Je voert <strong>minstens 3 aanpassingen</strong> door. Je hoeft niet elke tip te volgen — een portfolio is jouw ontwerp. Maar je schrijft per aanpassing één zin op: <em>"Ik heb X aangepast omdat Y, feedback van Z."</em> Dat lijstje hoort bij je deliverable 02.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CODE ============ -->
+<section id="code" aria-labelledby="t-code">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">07 — Code</span>
+      <h2 id="t-code">Van Figma naar HTML</h2>
+      <p class="sec-intro">Je bouwt met vanilla HTML, CSS en JavaScript. Geen frameworks, geen page builders, geen template van Wix of Squarespace — die zijn niet te verantwoorden en leveren geen punten op. Een framework enkel na overleg met je leerkracht.</p>
+    </div>
+
+    <div class="grid grid--2">
+      <div>
+        <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.1rem;margin:0 0 10px">Bestandsstructuur</h3>
+        <pre class="code-block"><code>portfolio/
+├── index.html
+├── project.html          &larr; &eacute;&eacute;n detailpagina voor al je werk
+├── css/
+│   └── style.css
+├── js/
+│   ├── projecten.js      &larr; de data van al je projecten
+│   ├── project.js        &larr; vult de detailpagina
+│   └── main.js           &larr; menu, filter, formulier
+└── assets/
+    ├── img/
+    │   ├── werk-01-800.webp
+    │   ├── werk-01-1600.webp
+    │   └── profielfoto.webp
+    └── video/
+        ├── showreel.mp4
+        ├── showreel.vtt
+        └── showreel-poster.webp</code></pre>
+        <p class="mono" style="font-size:.78rem;margin:8px 0 0">Geen spaties of accenten in bestandsnamen. Alles in lowercase. <span style="text-decoration:line-through">Mijn Foto's (1).JPG</span> → <span style="background:var(--yellow)">mijn-fotos-01.jpg</span></p>
+      </div>
+
+      <div>
+        <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.1rem;margin:0 0 10px">Semantische basis</h3>
+        <pre class="code-block"><code><span class="tok-com">&lt;!-- index.html --&gt;</span>
+<span class="tok-tag">&lt;body&gt;</span>
+  <span class="tok-tag">&lt;a</span> <span class="tok-attr">class</span>=<span class="tok-str">"skip"</span> <span class="tok-attr">href</span>=<span class="tok-str">"#main"</span><span class="tok-tag">&gt;</span>Naar inhoud<span class="tok-tag">&lt;/a&gt;</span>
+
+  <span class="tok-tag">&lt;header</span> <span class="tok-attr">class</span>=<span class="tok-str">"site-header"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;nav&gt;</span> … <span class="tok-tag">&lt;/nav&gt;</span>
+  <span class="tok-tag">&lt;/header&gt;</span>
+
+  <span class="tok-tag">&lt;main</span> <span class="tok-attr">id</span>=<span class="tok-str">"main"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;section</span> <span class="tok-attr">class</span>=<span class="tok-str">"hero"</span><span class="tok-tag">&gt;</span>   <span class="tok-com">&lt;!-- jumbotron + CTA --&gt;</span>
+      <span class="tok-tag">&lt;h1&gt;</span>…<span class="tok-tag">&lt;/h1&gt;</span>
+      <span class="tok-tag">&lt;a</span> <span class="tok-attr">class</span>=<span class="tok-str">"btn"</span> <span class="tok-attr">href</span>=<span class="tok-str">"#werk"</span><span class="tok-tag">&gt;</span>Bekijk mijn werk<span class="tok-tag">&lt;/a&gt;</span>
+    <span class="tok-tag">&lt;/section&gt;</span>
+
+    <span class="tok-tag">&lt;section</span> <span class="tok-attr">id</span>=<span class="tok-str">"over"</span><span class="tok-tag">&gt;</span>  <span class="tok-com">&lt;!-- over mij --&gt;</span>
+    <span class="tok-tag">&lt;section</span> <span class="tok-attr">id</span>=<span class="tok-str">"werk"</span><span class="tok-tag">&gt;</span>  <span class="tok-com">&lt;!-- portfolio grid --&gt;</span>
+    <span class="tok-tag">&lt;section</span> <span class="tok-attr">id</span>=<span class="tok-str">"video"</span><span class="tok-tag">&gt;</span> <span class="tok-com">&lt;!-- showreel --&gt;</span>
+    <span class="tok-tag">&lt;section</span> <span class="tok-attr">id</span>=<span class="tok-str">"contact"</span><span class="tok-tag">&gt;</span><span class="tok-com">&lt;!-- formulier --&gt;</span>
+  <span class="tok-tag">&lt;/main&gt;</span>
+
+  <span class="tok-tag">&lt;footer&gt;</span> … <span class="tok-tag">&lt;/footer&gt;</span>
+<span class="tok-tag">&lt;/body&gt;</span></code></pre>
+      </div>
+    </div>
+
+    <hr class="brutal">
+
+    <!-- ===== MINI-CURSUS 1: RESPONSIVE NAVIGATIE ===== -->
+    <div class="sec-head" style="margin-bottom:18px" id="nav-cursus">
+      <span class="sec-num">07.A — Mini-cursus</span>
+      <h2 style="font-size:clamp(1.5rem,4.4vw,2.4rem)">Responsive navigatie</h2>
+      <p class="sec-intro">Vier korte lessen: van een simpele hamburger tot een menu dat op elk scherm klopt, met Escape werkt en toegankelijk is. Dit is het onderdeel waar bijna elke portfolio op stukloopt — en het is tegelijk het eerste wat een bezoeker gebruikt.</p>
+    </div>
+
+    <div class="grid grid--3" style="margin-bottom:22px">
+      <div class="card card--yellow">
+        <h3>Wat je leert</h3>
+        <ul style="margin:0;padding-left:1.1em;font-size:.95rem">
+          <li>Een menu dat op mobiel dicht is en op desktop open</li>
+          <li>Openen en sluiten met een echte <span class="mono">&lt;button&gt;</span></li>
+          <li>Escape, klik buiten het menu, focus terug</li>
+          <li>Zichtbaar waar je je bevindt (<span class="mono">aria-current</span>)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Nodig</h3>
+        <p style="margin:0;font-size:.95rem">Je HTML-basis uit fase 04. Geen framework, geen library — alleen CSS en een handvol JavaScript. Reken op 45 minuten om alles zelf te bouwen.</p>
+      </div>
+      <div class="card card--ink">
+        <h3>Extra theorie</h3>
+        <p style="margin:0 0 10px;font-size:.95rem">De cursus <strong>Responsive Design</strong> van de vakgroep heeft een volledige module over dit onderwerp.</p>
+        <a class="btn btn--ghost" style="padding:9px 12px;font-size:.78rem" href="https://stevenvandersmissen.github.io/responsivedesign/#" target="_blank" rel="noopener">Module 10 · Responsive Navigatie ↗</a>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.1rem;margin:0 0 10px">Les 1 — Structuur: een knop, een nav, niets meer</h3>
+    <p style="max-width:66ch;margin:0 0 14px">Begin met de DOM. De knop staat <em>vóór</em> de <span class="mono">&lt;nav&gt;</span>, zodat de leesvolgorde voor een schermlezer klopt: eerst "menu", dan de links.</p>
+
+    <div class="grid grid--2">
+      <div>
+        <pre class="code-block"><code><span class="tok-com">&lt;!-- HTML: de volgorde is belangrijk --&gt;</span>
+<span class="tok-tag">&lt;header</span> <span class="tok-attr">class</span>=<span class="tok-str">"site-header"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;a</span> <span class="tok-attr">class</span>=<span class="tok-str">"logo"</span> <span class="tok-attr">href</span>=<span class="tok-str">"index.html"</span><span class="tok-tag">&gt;</span>JOUW NAAM<span class="tok-tag">&lt;/a&gt;</span>
+
+  <span class="tok-tag">&lt;button</span>
+    <span class="tok-attr">class</span>=<span class="tok-str">"menu-toggle"</span>
+    <span class="tok-attr">type</span>=<span class="tok-str">"button"</span>
+    <span class="tok-attr">aria-expanded</span>=<span class="tok-str">"false"</span>
+    <span class="tok-attr">aria-controls</span>=<span class="tok-str">"hoofdmenu"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;span</span> <span class="tok-attr">class</span>=<span class="tok-str">"sr-only"</span><span class="tok-tag">&gt;</span>Menu<span class="tok-tag">&lt;/span&gt;</span>
+    <span class="tok-tag">&lt;span</span> <span class="tok-attr">class</span>=<span class="tok-str">"bars"</span> <span class="tok-attr">aria-hidden</span>=<span class="tok-str">"true"</span><span class="tok-tag">&gt;&lt;/span&gt;</span>
+  <span class="tok-tag">&lt;/button&gt;</span>
+
+  <span class="tok-tag">&lt;nav</span> <span class="tok-attr">class</span>=<span class="tok-str">"nav"</span> <span class="tok-attr">id</span>=<span class="tok-str">"hoofdmenu"</span> <span class="tok-attr">aria-label</span>=<span class="tok-str">"Hoofdnavigatie"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;ul</span> <span class="tok-attr">class</span>=<span class="tok-str">"nav__list"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;li&gt;&lt;a</span> <span class="tok-attr">href</span>=<span class="tok-str">"index.html"</span> <span class="tok-attr">aria-current</span>=<span class="tok-str">"page"</span><span class="tok-tag">&gt;</span>Home<span class="tok-tag">&lt;/a&gt;&lt;/li&gt;</span>
+      <span class="tok-tag">&lt;li&gt;&lt;a</span> <span class="tok-attr">href</span>=<span class="tok-str">"#over"</span><span class="tok-tag">&gt;</span>Over mij<span class="tok-tag">&lt;/a&gt;&lt;/li&gt;</span>
+      <span class="tok-tag">&lt;li&gt;&lt;a</span> <span class="tok-attr">href</span>=<span class="tok-str">"#werk"</span><span class="tok-tag">&gt;</span>Werk<span class="tok-tag">&lt;/a&gt;&lt;/li&gt;</span>
+      <span class="tok-tag">&lt;li&gt;&lt;a</span> <span class="tok-attr">href</span>=<span class="tok-str">"#contact"</span><span class="tok-tag">&gt;</span>Contact<span class="tok-tag">&lt;/a&gt;&lt;/li&gt;</span>
+    <span class="tok-tag">&lt;/ul&gt;</span>
+  <span class="tok-tag">&lt;/nav&gt;</span>
+<span class="tok-tag">&lt;/header&gt;</span></code></pre>
+      </div>
+      <div class="callout" style="align-self:start">
+        <div class="callout__ico" aria-hidden="true">i</div>
+        <div>
+          <b>Waarom een &lt;button&gt; en geen &lt;div&gt;?</b>
+          <p>Een <span class="mono">&lt;button&gt;</span> is met het toetsenbord bereikbaar (Tab), reageert op Enter én Spatie, en wordt door schermlezers als knop aangekondigd. Een <span class="mono">&lt;div&gt;</span> met een click-listener doet niets van dat alles.</p>
+          <p><strong>Wat de aria-attributen doen:</strong></p>
+          <ul style="margin:6px 0 0;padding-left:1.1em;font-size:.94rem">
+            <li><span class="mono">aria-expanded="false"</span> — vertelt of het menu open of dicht is. JavaScript zet dit op <span class="mono">"true"</span>.</li>
+            <li><span class="mono">aria-controls="hoofdmenu"</span> — koppelt de knop aan het element dat hij bedient.</li>
+            <li><span class="mono">aria-current="page"</span> — markeert de link naar de pagina waar je nu bent.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.1rem;margin:34px 0 10px">Les 2 — CSS: dicht op mobiel, open op desktop</h3>
+    <p style="max-width:66ch;margin:0 0 14px">Mobile first: eerst de kleine versie, dan opschalen met <span class="mono">min-width</span>. Op mobiel is het menu standaard verborgen en verschijnt het pas met de klasse <span class="mono">.is-open</span>.</p>
+
+    <div class="grid grid--2">
+      <div>
+        <pre class="code-block"><code><span class="tok-com">/* CSS — mobile first */</span>
+<span class="tok-sel">.site-header</span> {
+  <span class="tok-prop">display</span>: flex;
+  <span class="tok-prop">align-items</span>: center;
+  <span class="tok-prop">justify-content</span>: space-between;
+  <span class="tok-prop">flex-wrap</span>: wrap;
+  <span class="tok-prop">padding</span>: 1rem;
+}
+
+<span class="tok-com">/* Mobiel: menu dicht, knop zichtbaar */</span>
+<span class="tok-sel">.nav</span> { <span class="tok-prop">display</span>: none; <span class="tok-prop">flex-basis</span>: 100%; }
+<span class="tok-sel">.nav.is-open</span> { <span class="tok-prop">display</span>: block; }
+
+<span class="tok-sel">.nav__list</span> {
+  <span class="tok-prop">list-style</span>: none;
+  <span class="tok-prop">margin</span>: 0;
+  <span class="tok-prop">padding</span>: 0;
+  <span class="tok-prop">display</span>: grid;
+}
+
+<span class="tok-sel">.nav__list a</span> {
+  <span class="tok-prop">display</span>: block;
+  <span class="tok-prop">padding</span>: 0.75rem 0;
+  <span class="tok-prop">text-decoration</span>: none;
+}
+
+<span class="tok-com">/* De link naar de huidige pagina */</span>
+<span class="tok-sel">.nav__list a[aria-current="page"]</span> {
+  <span class="tok-prop">font-weight</span>: 700;
+  <span class="tok-prop">text-decoration</span>: underline;
+  <span class="tok-prop">text-underline-offset</span>: 4px;
+}
+
+<span class="tok-com">/* Vanaf 768px: menu altijd zichtbaar, knop weg */</span>
+<span class="tok-sel">@media (min-width: 768px)</span> {
+  <span class="tok-sel">.menu-toggle</span> { <span class="tok-prop">display</span>: none; }
+  <span class="tok-sel">.nav</span> { <span class="tok-prop">display</span>: block; <span class="tok-prop">flex-basis</span>: auto; }
+  <span class="tok-sel">.nav__list</span> { <span class="tok-prop">display</span>: flex; <span class="tok-prop">gap</span>: 1.5rem; }
+}</code></pre>
+      </div>
+      <div class="callout callout--warn" style="align-self:start">
+        <div class="callout__ico" aria-hidden="true">!</div>
+        <div>
+          <b>De valkuil van de twee schermen</b>
+          <p>Als je het menu opent op mobiel en dan het browservenster breder sleept, staat <span class="mono">.is-open</span> nog op de nav. Dat is geen probleem — want vanaf 768px toont de media query het menu toch, ongeacht de klasse. Zet daar dus géén <span class="mono">display:none</span> op <span class="mono">.is-open</span>.</p>
+          <p>Omgekeerd: ga je van breed naar smal, dan kan het menu onverwacht openstaan. Daarom zetten we de klasse bij het wijzigen van de schermbreedte terug (zie les 3).</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.1rem;margin:34px 0 10px">Les 3 — JavaScript: open, dicht, Escape, buiten klikken</h3>
+    <p style="max-width:66ch;margin:0 0 14px">Alles wat je nodig hebt, staat hieronder. Lees het van boven naar onder: eerst de toggle, dan de drie manieren om te sluiten, dan het opruimen bij een groter scherm.</p>
+
+    <div class="grid grid--2">
+      <div>
+        <pre class="code-block"><code><span class="tok-com">// js/nav.js</span>
+<span class="tok-tag">const</span> toggle = document.<span class="tok-prop">querySelector</span>(<span class="tok-str">'.menu-toggle'</span>);
+<span class="tok-tag">const</span> nav    = document.<span class="tok-prop">querySelector</span>(<span class="tok-str">'#hoofdmenu'</span>);
+
+<span class="tok-com">// Eén functie die de staat zet: knop én menu samen</span>
+<span class="tok-tag">function</span> <span class="tok-prop">setMenu</span>(open) {
+  toggle.<span class="tok-prop">setAttribute</span>(<span class="tok-str">'aria-expanded'</span>, String(open));
+  nav.classList.<span class="tok-prop">toggle</span>(<span class="tok-str">'is-open'</span>, open);
+}
+
+<span class="tok-tag">function</span> <span class="tok-prop">isOpen</span>() {
+  <span class="tok-tag">return</span> toggle.<span class="tok-prop">getAttribute</span>(<span class="tok-str">'aria-expanded'</span>) === <span class="tok-str">'true'</span>;
+}
+
+<span class="tok-com">// 1. Openen en sluiten met de knop</span>
+toggle.<span class="tok-prop">addEventListener</span>(<span class="tok-str">'click'</span>, () =&gt; <span class="tok-prop">setMenu</span>(!<span class="tok-prop">isOpen</span>()));
+
+<span class="tok-com">// 2. Sluiten met Escape, focus terug naar de knop</span>
+document.<span class="tok-prop">addEventListener</span>(<span class="tok-str">'keydown'</span>, (e) =&gt; {
+  <span class="tok-tag">if</span> (e.key === <span class="tok-str">'Escape'</span> &amp;&amp; <span class="tok-prop">isOpen</span>()) {
+    <span class="tok-prop">setMenu</span>(<span class="tok-tag">false</span>);
+    toggle.<span class="tok-prop">focus</span>();
+  }
+});
+
+<span class="tok-com">// 3. Sluiten na een klik op een link (voor ankers op dezelfde pagina)</span>
+nav.<span class="tok-prop">addEventListener</span>(<span class="tok-str">'click'</span>, (e) =&gt; {
+  <span class="tok-tag">if</span> (e.target.<span class="tok-prop">closest</span>(<span class="tok-str">'a'</span>)) <span class="tok-prop">setMenu</span>(<span class="tok-tag">false</span>);
+});
+
+<span class="tok-com">// 4. Sluiten als je naast het menu klikt</span>
+document.<span class="tok-prop">addEventListener</span>(<span class="tok-str">'click'</span>, (e) =&gt; {
+  <span class="tok-tag">if</span> (!<span class="tok-prop">isOpen</span>()) <span class="tok-tag">return</span>;
+  <span class="tok-tag">if</span> (!nav.<span class="tok-prop">contains</span>(e.target) &amp;&amp; !toggle.<span class="tok-prop">contains</span>(e.target)) {
+    <span class="tok-prop">setMenu</span>(<span class="tok-tag">false</span>);
+  }
+});
+
+<span class="tok-com">// 5. Opruimen bij een breder scherm</span>
+<span class="tok-tag">const</span> breed = window.<span class="tok-prop">matchMedia</span>(<span class="tok-str">'(min-width: 768px)'</span>);
+breed.<span class="tok-prop">addEventListener</span>(<span class="tok-str">'change'</span>, (e) =&gt; {
+  <span class="tok-tag">if</span> (e.matches) <span class="tok-prop">setMenu</span>(<span class="tok-tag">false</span>);
+});</code></pre>
+      </div>
+      <div>
+        <div class="callout callout--ok">
+          <div class="callout__ico" aria-hidden="true">✓</div>
+          <div>
+            <b>Waarom dit robuust is</b>
+            <p>Alle state zit op één plaats: <span class="mono">aria-expanded</span> op de knop. De klasse volgt die state, niet omgekeerd. Daardoor kunnen HTML en JavaScript nooit uit elkaar lopen — en een schermlezer leest precies hetzelfde als wat je ziet.</p>
+          </div>
+        </div>
+        <div class="callout mt-2">
+          <div class="callout__ico" aria-hidden="true">i</div>
+          <div>
+            <b>Klein maar belangrijk</b>
+            <p><span class="mono">matchMedia</span> is de nette manier om te reageren op een breakpoint in JavaScript: je herhaalt de waarde uit je CSS niet in een resize-listener met <span class="mono">innerWidth</span>.</p>
+            <p>Zet je script onderaan je pagina of gebruik <span class="mono">defer</span>, anders bestaat de knop nog niet wanneer het script loopt.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.1rem;margin:34px 0 10px">Les 4 — Varianten en afwerking</h3>
+    <div class="grid grid--3">
+      <div class="card">
+        <h3>Zonder JavaScript</h3>
+        <p style="margin:0 0 10px;font-size:.95rem">Een <span class="mono">&lt;details&gt;</span>-element doet het gratis: het opent en sluit zonder script. Nadeel: je hebt minder controle over de animatie.</p>
+        <pre class="code-block" style="box-shadow:none"><code><span class="tok-tag">&lt;details</span> <span class="tok-attr">class</span>=<span class="tok-str">"nav"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;summary&gt;</span>Menu<span class="tok-tag">&lt;/summary&gt;</span>
+  <span class="tok-tag">&lt;ul&gt;</span> … <span class="tok-tag">&lt;/ul&gt;</span>
+<span class="tok-tag">&lt;/details&gt;</span></code></pre>
+      </div>
+      <div class="card">
+        <h3>Animeren</h3>
+        <p style="margin:0 0 10px;font-size:.95rem">Laat het menu niet verspringen maar schuiven. Respecteer wel wie liever geen beweging ziet.</p>
+        <pre class="code-block" style="box-shadow:none"><code><span class="tok-sel">.nav</span> {
+  <span class="tok-prop">transform</span>: translateY(-8px);
+  <span class="tok-prop">opacity</span>: 0;
+  <span class="tok-prop">transition</span>: .18s ease;
+}
+<span class="tok-sel">.nav.is-open</span> {
+  <span class="tok-prop">transform</span>: none;
+  <span class="tok-prop">opacity</span>: 1;
+}
+<span class="tok-sel">@media (prefers-reduced-motion: reduce)</span> {
+  <span class="tok-sel">.nav</span> { <span class="tok-prop">transition</span>: none; }
+}</code></pre>
+      </div>
+      <div class="card">
+        <h3>Groter dan drie links?</h3>
+        <p style="margin:0;font-size:.95rem">Heb je meer dan vijf items, groepeer dan in plaats van te proppen. Op desktop mag je een paar secundaire links (Instagram, LinkedIn, cv) naar de footer verhuizen. Een horizontale nav met acht items wordt onleesbaar — ook op 1440px.</p>
+      </div>
+    </div>
+
+    <div class="callout callout--warn mt-2">
+      <div class="callout__ico" aria-hidden="true">!</div>
+      <div>
+        <b>De vier klassieke fouten</b>
+        <p><strong>1.</strong> Menu openen met <span class="mono">style.display = 'block'</span> en vergeten op te ruimen bij een breder scherm.</p>
+        <p><strong>2.</strong> De knop verbergen met <span class="mono">display:none</span> in de móbiele CSS. Resultaat: niemand kan je menu ooit openen.</p>
+        <p><strong>3.</strong> Geen focus-state. Tab door je pagina: je moet altijd zien waar je staat.</p>
+        <p><strong>4.</strong> De knop staat ná de nav in de DOM in plaats van ervoor, waardoor toetsenbordgebruikers eerst langs alle links moeten voor ze bij de knop komen.</p>
+      </div>
+    </div>
+
+    <div class="callout callout--ok mt-2">
+      <div class="callout__ico" aria-hidden="true">✓</div>
+      <div>
+        <b>Klaar als…</b>
+        <p>Je menu op 390px opent en sluit met de knop, sluit met Escape, sluit als je ernaast klikt, op 768px en breder automatisch horizontaal staat zonder dat de knop nog te zien is, en je met Tab door alle links geraakt zonder vast te lopen.</p>
+      </div>
+    </div>
+
+    <hr class="brutal">
+
+    <!-- ===== MINI-CURSUS 2: AFBEELDINGSGRID ===== -->
+    <div class="sec-head" style="margin-bottom:18px" id="grid-cursus">
+      <span class="sec-num">07.B — Mini-cursus</span>
+      <h2 style="font-size:clamp(1.5rem,4.4vw,2.4rem)">Afbeeldingsgrid:<br>masonry of editorial</h2>
+      <p class="sec-intro">Je werk staat of valt met de manier waarop je het toont. In deze mini-cursus kies je eerst je grid, dan maak je de kaart die erin komt, en tot slot zorg je dat het grid niet instort op een gsm.</p>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.1rem;margin:0 0 10px">Les 1 — Kies je grid in 1 minuut</h3>
+    <div class="table-wrap" style="margin-bottom:22px">
+      <table>
+        <caption>Drie manieren, drie karakters</caption>
+        <thead>
+          <tr><th scope="col">Techniek</th><th scope="col">Karakter</th><th scope="col">Wanneer kiezen</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Uniform grid</strong><br><span class="mono" style="font-size:.8rem">grid-template-columns</span></td>
+            <td>Rustig, voorspelbaar, alle kaarten even groot</td>
+            <td>Als je werk heel verschillend is van formaat en je rust wil. De veiligste optie, altijd goed.</td>
+          </tr>
+          <tr>
+            <td><strong>Editorial grid</strong><br><span class="mono" style="font-size:.8rem">grid-column: span</span></td>
+            <td>Asymmetrisch, magazine-achtig, met uitschieters</td>
+            <td>Als je wil dat één werk de show steelt en de rest meeloopt. Meest "ontworpen" gevoel.</td>
+          </tr>
+          <tr>
+            <td><strong>Masonry</strong><br><span class="mono" style="font-size:.8rem">CSS columns</span></td>
+            <td>Organisch, Pinterest-achtig, hoogtes verschillen</td>
+            <td>Als je veel staand werk hebt (posters, illustraties, foto's). Let op: de leesorde wordt kolom per kolom.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid grid--2">
+      <div>
+        <pre class="code-block"><code><span class="tok-com">/* A — uniform responsive grid */</span>
+<span class="tok-sel">.gallery</span> {
+  <span class="tok-prop">display</span>: grid;
+  <span class="tok-prop">gap</span>: 1rem;
+  <span class="tok-prop">grid-template-columns</span>: 1fr;
+}
+<span class="tok-sel">@media (min-width: 768px)</span> {
+  <span class="tok-sel">.gallery</span> {
+    <span class="tok-prop">grid-template-columns</span>: repeat(2, 1fr);
+  }
+}
+<span class="tok-sel">@media (min-width: 1200px)</span> {
+  <span class="tok-sel">.gallery</span> {
+    <span class="tok-prop">grid-template-columns</span>: repeat(3, 1fr);
+  }
+}
+
+<span class="tok-com">/* Het beeld zelf: nooit uitrekken */</span>
+<span class="tok-sel">.gallery img</span> {
+  <span class="tok-prop">width</span>: 100%;
+  <span class="tok-prop">height</span>: 100%;
+  <span class="tok-prop">object-fit</span>: cover;
+  <span class="tok-prop">display</span>: block;
+}</code></pre>
+      </div>
+      <div>
+        <pre class="code-block"><code><span class="tok-com">/* B — editorial grid: 6 kolommen als basis */</span>
+<span class="tok-sel">.gallery</span> {
+  <span class="tok-prop">display</span>: grid;
+  <span class="tok-prop">gap</span>: 1.25rem;
+  <span class="tok-prop">grid-template-columns</span>: repeat(6, 1fr);
+  <span class="tok-prop">grid-auto-rows</span>: minmax(120px, auto);
+}
+
+<span class="tok-sel">.work--full</span>  { <span class="tok-prop">grid-column</span>: span 6; }  <span class="tok-com">/* volle breedte */</span>
+<span class="tok-sel">.work--half</span>  { <span class="tok-prop">grid-column</span>: span 3; }  <span class="tok-com">/* helft */</span>
+<span class="tok-sel">.work--tall</span>  { <span class="tok-prop">grid-row</span>: span 2; }    <span class="tok-com">/* hoog */</span>
+
+<span class="tok-com">/* De blikvanger: enkel vanaf 900px, anders te druk */</span>
+<span class="tok-sel">@media (min-width: 900px)</span> {
+  <span class="tok-sel">.work--feature</span> {
+    <span class="tok-prop">grid-column</span>: span 4;
+    <span class="tok-prop">grid-row</span>: span 2;
+  }
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="grid grid--2 mt-2">
+      <div>
+        <pre class="code-block"><code><span class="tok-com">/* C — masonry met CSS columns */</span>
+<span class="tok-sel">.masonry</span> {
+  <span class="tok-prop">columns</span>: 1;
+  <span class="tok-prop">column-gap</span>: 1rem;
+}
+<span class="tok-sel">.masonry &gt; *</span> {
+  <span class="tok-prop">break-inside</span>: avoid;
+  <span class="tok-prop">margin-bottom</span>: 1rem;
+}
+<span class="tok-sel">@media (min-width: 768px)</span> {
+  <span class="tok-sel">.masonry</span> { <span class="tok-prop">columns</span>: 2; }
+}
+<span class="tok-sel">@media (min-width: 1200px)</span> {
+  <span class="tok-sel">.masonry</span> { <span class="tok-prop">columns</span>: 3; }
+}</code></pre>
+        <p class="mono" style="font-size:.78rem;margin:8px 0 0">Nieuwe CSS heeft <span style="background:var(--yellow)">grid-template-rows: masonry</span>, maar dat is nog niet overal ondersteund. Voor deze opdracht: gebruik <span class="mono">columns</span> of het editorial grid.</p>
+      </div>
+      <div class="callout callout--warn" style="align-self:start">
+        <div class="callout__ico" aria-hidden="true">!</div>
+        <div>
+          <b>Editorial grid: de valkuil</b>
+          <p>Bij <span class="mono">span</span>-breedtes moet je altijd een fallback hebben voor smalle schermen: zet je grid op mobiel op <span class="mono">1fr</span> en reset de spans.</p>
+          <p style="margin-top:8px"><span class="mono">@media (max-width: 767px) { .work--full, .work--half, .work--feature { grid-column: auto; grid-row: auto; } }</span></p>
+          <p style="margin-top:8px">En: een editorial grid waarin zes items allemaal "feature" zijn, is gewoon een rommelige pagina. Kies <strong>één</strong> blikvanger.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.1rem;margin:34px 0 10px">Les 2 — De kaart in het grid</h3>
+    <div class="grid grid--2">
+      <div>
+        <pre class="code-block"><code><span class="tok-tag">&lt;article</span> <span class="tok-attr">class</span>=<span class="tok-str">"work work--feature"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;a</span> <span class="tok-attr">class</span>=<span class="tok-str">"work__link"</span> <span class="tok-attr">href</span>=<span class="tok-str">"project.html?id=schoolfeest-2025"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;figure</span> <span class="tok-attr">class</span>=<span class="tok-str">"work__media"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;img</span>
+        <span class="tok-attr">src</span>=<span class="tok-str">"assets/img/werk-01-800.webp"</span>
+        <span class="tok-attr">srcset</span>=<span class="tok-str">"assets/img/werk-01-400.webp 400w,
+                assets/img/werk-01-800.webp 800w,
+                assets/img/werk-01-1600.webp 1600w"</span>
+        <span class="tok-attr">sizes</span>=<span class="tok-str">"(min-width:1200px) 33vw,
+               (min-width:768px) 50vw, 100vw"</span>
+        <span class="tok-attr">alt</span>=<span class="tok-str">"Poster voor het schoolfeest, rood-zwart"</span>
+        <span class="tok-attr">width</span>=<span class="tok-str">"800"</span> <span class="tok-attr">height</span>=<span class="tok-str">"1000"</span>
+        <span class="tok-attr">loading</span>=<span class="tok-str">"lazy"</span><span class="tok-tag">&gt;</span>
+    <span class="tok-tag">&lt;/figure&gt;</span>
+    <span class="tok-tag">&lt;h3</span> <span class="tok-attr">class</span>=<span class="tok-str">"work__title"</span><span class="tok-tag">&gt;</span>Schoolfeest 2025<span class="tok-tag">&lt;/h3&gt;</span>
+    <span class="tok-tag">&lt;p</span> <span class="tok-attr">class</span>=<span class="tok-str">"work__meta"</span><span class="tok-tag">&gt;</span>Poster · Illustrator · 2025<span class="tok-tag">&lt;/p&gt;</span>
+  <span class="tok-tag">&lt;/a&gt;</span>
+<span class="tok-tag">&lt;/article&gt;</span></code></pre>
+      </div>
+      <div>
+        <div class="callout callout--ok" style="align-self:start">
+          <div class="callout__ico" aria-hidden="true">✓</div>
+          <div>
+            <b>Waarom een link rond de hele kaart?</b>
+            <p>Een groter klikvlak is beter voor muis én duim. Zet er wel een duidelijke hover- en focus-state op:</p>
+            <p class="mono" style="font-size:.8rem;margin-top:8px">.work__link:focus-visible { outline: 3px solid #1B2DFF; outline-offset: 4px; }</p>
+          </div>
+        </div>
+        <div class="callout mt-2">
+          <div class="callout__ico" aria-hidden="true">i</div>
+          <div>
+            <b>Alt-teksten die werken</b>
+            <p>Slecht: <em>"poster"</em>. Goed: <em>"Poster voor het schoolfeest van 2025, zwarte achtergrond met rode typografie"</em>. Beschrijf wat je ziet, niet wat het bestand heet. Is het puur decoratief? Dan <span class="mono">alt=""</span>.</p>
+            <p><span class="mono">width</span> en <span class="mono">height</span> zijn verplicht: daarmee reserveert de browser al ruimte en verspringt je grid niet tijdens het laden.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="brutal">
+
+    <!-- ===== MINI-CURSUS 3: PROJECTDETAILPAGINA OP JS ===== -->
+    <div class="sec-head" style="margin-bottom:18px" id="detail-cursus">
+      <span class="sec-num">07.C — Mini-cursus</span>
+      <h2 style="font-size:clamp(1.5rem,4.4vw,2.4rem)">Een sterke<br>projectdetailpagina<br>die draait op JS</h2>
+      <p class="sec-intro">Eén detailpagina per project kopiëren is dubbel werk en loopt gegarandeerd fout bij de eerste aanpassing. In deze mini-cursus bouw je <strong>één</strong> detailpagina die zijn inhoud uit een JavaScript-object haalt. Je project toevoegen wordt dan één blokje data — en je leert meteen hoe echte sites werken.</p>
+    </div>
+
+    <div class="callout callout--ok" style="margin-bottom:18px">
+      <div class="callout__ico" aria-hidden="true">✓</div>
+      <div>
+        <b>Waarom dit de sterkste keuze is</b>
+        <p>Eén HTML-bestand (<span class="mono">project.html</span>), één databestand (<span class="mono">js/projecten.js</span>) en één script (<span class="mono">js/project.js</span>). Je opent een project via <span class="mono">project.html?id=schoolfeest-2025</span>. Nieuw werk toevoegen = één object in je lijst. Geen kopieerwerk, geen vergeten titels, geen kapotte links.</p>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.1rem;margin:0 0 10px">Les 1 — De data: één object per project</h3>
+    <p style="max-width:66ch;margin:0 0 14px">Begin bij de inhoud, niet bij de code. Elk project is een object met vaste sleutels. Houd de namen identiek voor elk project — daar rekent je script op.</p>
+
+    <div class="grid grid--2">
+      <div>
+        <pre class="code-block"><code><span class="tok-com">// js/projecten.js</span>
+<span class="tok-tag">const</span> projecten = [
+  {
+    id: <span class="tok-str">'schoolfeest-2025'</span>,
+    titel: <span class="tok-str">'Schoolfeest 2025'</span>,
+    categorie: <span class="tok-str">'Poster'</span>,
+    jaar: <span class="tok-str">'2025'</span>,
+    tools: <span class="tok-str">'Illustrator, Figma'</span>,
+    rol: <span class="tok-str">'Concept &amp; vormgeving'</span>,
+    intro: <span class="tok-str">'Een campagne voor het jaarlijkse schoolfeest, van affiche tot Instagram-post.'</span>,
+    verhaal: [
+      { kop: <span class="tok-str">'De opdracht'</span>, tekst: <span class="tok-str">'Het schoolfeest…'</span> },
+      { kop: <span class="tok-str">'Mijn aanpak'</span>, tekst: <span class="tok-str">'Ik vertrok van…'</span> },
+      { kop: <span class="tok-str">'Resultaat'</span>, tekst: <span class="tok-str">'Gedrukt op A2…'</span> }
+    ],
+    beelden: [
+      { src: <span class="tok-str">'assets/img/schoolfeest-1600.webp'</span>,
+        alt: <span class="tok-str">'Definitieve poster, rood op zwart'</span> },
+      { src: <span class="tok-str">'assets/img/schoolfeest-schets.webp'</span>,
+        alt: <span class="tok-str">'Potloodschets van drie postercomposities'</span> }
+    ],
+    volgend: <span class="tok-str">'portretreeks-2024'</span>
+  },
+  {
+    id: <span class="tok-str">'portretreeks-2024'</span>,
+    titel: <span class="tok-str">'Portretreeks'</span>,
+    categorie: <span class="tok-str">'Fotografie'</span>,
+    jaar: <span class="tok-str">'2024'</span>,
+    <span class="tok-com">// … dezelfde sleutels, andere inhoud</span>
+    volgend: <span class="tok-str">'schoolfeest-2025'</span>
+  }
+];</code></pre>
+      </div>
+      <div>
+        <div class="callout">
+          <div class="callout__ico" aria-hidden="true">i</div>
+          <div>
+            <b>Regels voor je data</b>
+            <ul style="margin:6px 0 0;padding-left:1.1em;font-size:.94rem">
+              <li>De <span class="mono">id</span> is uniek, in lowercase, met koppeltekens en zonder spaties of accenten. Die id komt in de URL.</li>
+              <li>Elk project heeft <strong>exact dezelfde sleutels</strong>. Ontbreekt er iets, dan valt het gat op in je pagina.</li>
+              <li>Tekst schrijf je tussen quotes. Gebruik je een apostrof binnen de tekst (<span class="mono">'t</span>), dan moet je ofwel het enkele quote-teken escapen (<span class="mono">\'</span>) ofwel dubbele quotes nemen.</li>
+              <li><span class="mono">verhaal</span> en <span class="mono">beelden</span> zijn <em>arrays</em>: daar kan je zoveel blokken in zetten als je wil.</li>
+              <li>Minstens drie blokken in <span class="mono">verhaal</span>: de opdracht, je aanpak, het resultaat. Dat is wat een detailpagina sterk maakt.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout callout--warn mt-2">
+          <div class="callout__ico" aria-hidden="true">!</div>
+          <div>
+            <b>Let op de komma's</b>
+            <p>Tussen objecten en tussen eigenschappen staat een komma, maar <strong>niet na de laatste</strong> van een lijst. Een vergeten of te veel komma is de fout nummer één — je browser toont dan niets en de console geeft een <span class="mono">SyntaxError</span>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.1rem;margin:34px 0 10px">Les 2 — De HTML: een skelet met vaste haken</h3>
+    <p style="max-width:66ch;margin:0 0 14px">Je detailpagina bevat de structuur en de lege plaatsen waar JavaScript straks inhoud zet. Elk element dat gevuld wordt, krijgt een <span class="mono">id</span>. Zo weet je script precies waar het moet schrijven.</p>
+
+    <div class="grid grid--2">
+      <div>
+        <pre class="code-block"><code><span class="tok-com">&lt;!-- project.html --&gt;</span>
+<span class="tok-tag">&lt;!DOCTYPE html&gt;</span>
+<span class="tok-tag">&lt;html</span> <span class="tok-attr">lang</span>=<span class="tok-str">"nl"</span><span class="tok-tag">&gt;</span>
+<span class="tok-tag">&lt;head&gt;</span>
+  <span class="tok-tag">&lt;meta</span> <span class="tok-attr">charset</span>=<span class="tok-str">"utf-8"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;meta</span> <span class="tok-attr">name</span>=<span class="tok-str">"viewport"</span>
+        <span class="tok-attr">content</span>=<span class="tok-str">"width=device-width, initial-scale=1"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;title&gt;</span>Project · Mijn portfolio<span class="tok-tag">&lt;/title&gt;</span>
+  <span class="tok-tag">&lt;link</span> <span class="tok-attr">rel</span>=<span class="tok-str">"stylesheet"</span> <span class="tok-attr">href</span>=<span class="tok-str">"css/style.css"</span><span class="tok-tag">&gt;</span>
+<span class="tok-tag">&lt;/head&gt;</span>
+<span class="tok-tag">&lt;body&gt;</span>
+
+<span class="tok-tag">&lt;main</span> <span class="tok-attr">id</span>=<span class="tok-str">"main"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;article</span> <span class="tok-attr">class</span>=<span class="tok-str">"project"</span><span class="tok-tag">&gt;</span>
+
+    <span class="tok-tag">&lt;header</span> <span class="tok-attr">class</span>=<span class="tok-str">"project__header"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;p</span> <span class="tok-attr">class</span>=<span class="tok-str">"project__kicker"</span> <span class="tok-attr">id</span>=<span class="tok-str">"kicker"</span><span class="tok-tag">&gt;&lt;/p&gt;</span>
+      <span class="tok-tag">&lt;h1</span> <span class="tok-attr">class</span>=<span class="tok-str">"project__title"</span> <span class="tok-attr">id</span>=<span class="tok-str">"titel"</span><span class="tok-tag">&gt;&lt;/h1&gt;</span>
+      <span class="tok-tag">&lt;p</span> <span class="tok-attr">class</span>=<span class="tok-str">"project__lead"</span> <span class="tok-attr">id</span>=<span class="tok-str">"intro"</span><span class="tok-tag">&gt;&lt;/p&gt;</span>
+    <span class="tok-tag">&lt;/header&gt;</span>
+
+    <span class="tok-tag">&lt;dl</span> <span class="tok-attr">class</span>=<span class="tok-str">"project__meta"</span> <span class="tok-attr">id</span>=<span class="tok-str">"meta"</span><span class="tok-tag">&gt;&lt;/dl&gt;</span>
+
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"project__body"</span> <span class="tok-attr">id</span>=<span class="tok-str">"verhaal"</span><span class="tok-tag">&gt;&lt;/div&gt;</span>
+
+    <span class="tok-tag">&lt;div</span> <span class="tok-attr">class</span>=<span class="tok-str">"project__gallery"</span> <span class="tok-attr">id</span>=<span class="tok-str">"beelden"</span><span class="tok-tag">&gt;&lt;/div&gt;</span>
+
+    <span class="tok-tag">&lt;nav</span> <span class="tok-attr">class</span>=<span class="tok-str">"project__nav"</span> <span class="tok-attr">aria-label</span>=<span class="tok-str">"Projectnavigatie"</span><span class="tok-tag">&gt;</span>
+      <span class="tok-tag">&lt;a</span> <span class="tok-attr">href</span>=<span class="tok-str">"index.html#werk"</span><span class="tok-tag">&gt;</span>← Alle projecten<span class="tok-tag">&lt;/a&gt;</span>
+      <span class="tok-tag">&lt;a</span> <span class="tok-attr">id</span>=<span class="tok-str">"volgend"</span> <span class="tok-attr">href</span>=<span class="tok-str">"#"</span><span class="tok-tag">&gt;</span>Volgend project →<span class="tok-tag">&lt;/a&gt;</span>
+    <span class="tok-tag">&lt;/nav&gt;</span>
+
+  <span class="tok-tag">&lt;/article&gt;</span>
+<span class="tok-tag">&lt;/main&gt;</span>
+
+<span class="tok-tag">&lt;script</span> <span class="tok-attr">src</span>=<span class="tok-str">"js/projecten.js"</span><span class="tok-tag">&gt;&lt;/script&gt;</span>
+<span class="tok-tag">&lt;script</span> <span class="tok-attr">src</span>=<span class="tok-str">"js/project.js"</span><span class="tok-tag">&gt;&lt;/script&gt;</span>
+<span class="tok-tag">&lt;/body&gt;</span>
+<span class="tok-tag">&lt;/html&gt;</span></code></pre>
+      </div>
+      <div>
+        <div class="callout">
+          <div class="callout__ico" aria-hidden="true">i</div>
+          <div>
+            <b>Waarom een leeg skelet en geen verborgen inhoud?</b>
+            <p>Alles wat je via JavaScript vult, bestaat pas na het laden. Dat is hier bewust: dezelfde HTML bedient alle projecten. Zet er dus géén voorbeeldtekst in die blijft staan als je script faalt — je ziet dan meteen dat er iets mis is.</p>
+            <p><strong>Volgorde van de scripts is belangrijk:</strong> eerst <span class="mono">projecten.js</span> (de data), dan <span class="mono">project.js</span> (de logica). Anders is de variabele <span class="mono">projecten</span> nog niet bekend.</p>
+          </div>
+        </div>
+        <div class="callout callout--warn mt-2">
+          <div class="callout__ico" aria-hidden="true">!</div>
+          <div>
+            <b>Toegankelijkheid</b>
+            <p>Een schermlezer leest de pagina voor zodra hij geladen is. Omdat je titel pas daarna ingevuld wordt, moet je ook het <span class="mono">&lt;title&gt;</span>-element van de pagina aanpassen (dat doen we in les 3) en het laden niet eindeloos laten duren. Voor deze opdracht is dat voldoende.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.1rem;margin:34px 0 10px">Les 3 — Het script: id uitlezen, inhoud opbouwen</h3>
+    <p style="max-width:66ch;margin:0 0 14px">Nu komt het samen: lees de <span class="mono">id</span> uit de URL, zoek het juiste project, en vul elk blok. Dit is de volledige logica — minder dan vijftig regels, en je kan elke regel uitleggen.</p>
+
+    <div class="grid grid--2">
+      <div>
+        <pre class="code-block"><code><span class="tok-com">// js/project.js</span>
+
+<span class="tok-com">// 1. Welk project? De id staat in de URL: project.html?id=…</span>
+<span class="tok-tag">const</span> params = <span class="tok-tag">new</span> URLSearchParams(window.location.search);
+<span class="tok-tag">const</span> id = params.<span class="tok-prop">get</span>(<span class="tok-str">'id'</span>);
+
+<span class="tok-com">// 2. Zoek dat project in de lijst</span>
+<span class="tok-tag">const</span> project = projecten.<span class="tok-prop">find</span>(p =&gt; p.id === id);
+
+<span class="tok-com">// 3. Bestaat het niet? Toon een nette melding.</span>
+<span class="tok-tag">if</span> (!project) {
+  document.<span class="tok-prop">querySelector</span>(<span class="tok-str">'.project'</span>).innerHTML =
+    <span class="tok-str">'&lt;h1&gt;Project niet gevonden&lt;/h1&gt;'</span> +
+    <span class="tok-str">'&lt;p&gt;&lt;a href="index.html#werk"&gt;Terug naar alle werk&lt;/a&gt;&lt;/p&gt;'</span>;
+} <span class="tok-tag">else</span> {
+  <span class="tok-prop">toonProject</span>(project);
+}
+
+<span class="tok-com">// 4. Alle blokken vullen</span>
+<span class="tok-tag">function</span> <span class="tok-prop">toonProject</span>(p) {
+
+  <span class="tok-com">// Kop</span>
+  document.getElementById(<span class="tok-str">'kicker'</span>).textContent =
+    <span class="tok-str">`${p.categorie} · Schoolopdracht · ${p.jaar}`</span>;
+  document.getElementById(<span class="tok-str">'titel'</span>).textContent = p.titel;
+  document.getElementById(<span class="tok-str">'intro'</span>).textContent = p.intro;
+
+  <span class="tok-com">// Titel van het browsertabblad</span>
+  document.title = <span class="tok-str">`${p.titel} · Mijn portfolio`</span>;
+
+  <span class="tok-com">// Metagegevens als &lt;dt&gt;/&lt;dd&gt;-paren</span>
+  <span class="tok-tag">const</span> meta = document.getElementById(<span class="tok-str">'meta'</span>);
+  <span class="tok-tag">const</span> velden = [
+    [<span class="tok-str">'Jaar'</span>, p.jaar],
+    [<span class="tok-str">'Tools'</span>, p.tools],
+    [<span class="tok-str">'Rol'</span>, p.rol]
+  ];
+  meta.innerHTML = velden
+    .<span class="tok-prop">map</span>(([k, v]) =&gt; <span class="tok-str">`&lt;div&gt;&lt;dt&gt;${k}&lt;/dt&gt;&lt;dd&gt;${v}&lt;/dd&gt;&lt;/div&gt;`</span>)
+    .<span class="tok-prop">join</span>(<span class="tok-str">''</span>);
+
+  <span class="tok-com">// Het verhaal: per blok een kop + alinea</span>
+  <span class="tok-tag">const</span> verhaal = document.getElementById(<span class="tok-str">'verhaal'</span>);
+  verhaal.innerHTML = p.verhaal
+    .<span class="tok-prop">map</span>(blok =&gt; <span class="tok-str">`
+      &lt;h2&gt;${blok.kop}&lt;/h2&gt;
+      &lt;p&gt;${blok.tekst}&lt;/p&gt;`</span>)
+    .<span class="tok-prop">join</span>(<span class="tok-str">''</span>);
+
+  <span class="tok-com">// De beelden</span>
+  <span class="tok-tag">const</span> galerij = document.getElementById(<span class="tok-str">'beelden'</span>);
+  galerij.innerHTML = p.beelden
+    .<span class="tok-prop">map</span>(img =&gt; <span class="tok-str">`
+      &lt;figure&gt;
+        &lt;img src="${img.src}" alt="${img.alt}" loading="lazy"&gt;
+      &lt;/figure&gt;`</span>)
+    .<span class="tok-prop">join</span>(<span class="tok-str">''</span>);
+
+  <span class="tok-com">// Volgend project</span>
+  <span class="tok-tag">const</span> volgende = projecten.<span class="tok-prop">find</span>(q =&gt; q.id === p.volgend);
+  <span class="tok-tag">const</span> knop = document.getElementById(<span class="tok-str">'volgend'</span>);
+  <span class="tok-tag">if</span> (volgende) {
+    knop.href = <span class="tok-str">`project.html?id=${volgende.id}`</span>;
+    knop.textContent = <span class="tok-str">`Volgend project: ${volgende.titel} →`</span>;
+  } <span class="tok-tag">else</span> {
+    knop.<span class="tok-prop">remove</span>();
+  }
+}</code></pre>
+      </div>
+      <div>
+        <div class="callout">
+          <div class="callout__ico" aria-hidden="true">i</div>
+          <div>
+            <b>De vier stukken die je moet begrijpen</b>
+            <ul style="margin:6px 0 0;padding-left:1.1em;font-size:.94rem">
+              <li><span class="mono">URLSearchParams</span> leest wat er na het vraagteken in de URL staat. <span class="mono">?id=schoolfeest-2025</span> levert <span class="mono">'schoolfeest-2025'</span>.</li>
+              <li><span class="mono">find()</span> loopt je lijst af en geeft het eerste project terug waarvan de id klopt. Geen match? Dan <span class="mono">undefined</span>.</li>
+              <li><span class="mono">textContent</span> zet platte tekst — veilig. Gebruik het voor titels en koppen.</li>
+              <li><span class="mono">innerHTML</span> zet HTML. Handig voor lijstjes, maar alleen met <strong>je eigen data</strong>. Nooit met iets wat een bezoeker intypt.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout callout--warn mt-2">
+          <div class="callout__ico" aria-hidden="true">!</div>
+          <div>
+            <b>Template literals</b>
+            <p>De backtick <span class="mono">`</span> laat je tekst en variabelen mengen met <span class="mono">${…}</span>. Vergeet de backtick niet: met gewone quotes werkt <span class="mono">${…}</span> niet en zie je letterlijk <span class="mono">${p.titel}</span> op je scherm.</p>
+          </div>
+        </div>
+        <div class="callout callout--ok mt-2">
+          <div class="callout__ico" aria-hidden="true">✓</div>
+          <div>
+            <b>Fout zoeken</b>
+            <p>Open DevTools → Console (F12). Een rode <span class="mono">SyntaxError</span> wijst op een komma of quote in je data. Een <span class="mono">TypeError: Cannot read properties of null</span> betekent dat een <span class="mono">getElementById</span> niets vond: dan klopt een id in je HTML niet met je script.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.1rem;margin:34px 0 10px">Les 4 — Stijl, en de fouten die iedereen maakt</h3>
+    <div class="grid grid--2">
+      <div>
+        <pre class="code-block"><code><span class="tok-com">/* projectdetail: één kolom mobiel, editorial op desktop */</span>
+<span class="tok-sel">.project</span> {
+  <span class="tok-prop">display</span>: grid;
+  <span class="tok-prop">gap</span>: 1.5rem;
+  <span class="tok-prop">max-width</span>: 75rem;
+  <span class="tok-prop">margin-inline</span>: auto;
+  <span class="tok-prop">padding</span>: 1.5rem;
+}
+
+<span class="tok-sel">.project__lead</span> {
+  <span class="tok-prop">font-size</span>: clamp(1.05rem, 2vw, 1.35rem);
+  <span class="tok-prop">max-width</span>: 60ch;
+}
+
+<span class="tok-sel">.project__meta</span> {
+  <span class="tok-prop">display</span>: grid;
+  <span class="tok-prop">gap</span>: .75rem;
+  <span class="tok-prop">border-block</span>: 2px solid currentColor;
+  <span class="tok-prop">padding-block</span>: 1rem;
+}
+
+<span class="tok-sel">.project__gallery</span> {
+  <span class="tok-prop">display</span>: grid;
+  <span class="tok-prop">gap</span>: 1rem;
+}
+<span class="tok-sel">.project__gallery img</span> {
+  <span class="tok-prop">width</span>: 100%;
+  <span class="tok-prop">height</span>: auto;
+}
+
+<span class="tok-sel">@media (min-width: 900px)</span> {
+  <span class="tok-sel">.project</span> {
+    <span class="tok-prop">grid-template-columns</span>: 1fr 16rem;
+    <span class="tok-prop">column-gap</span>: 3rem;
+    <span class="tok-prop">align-items</span>: start;
+  }
+  <span class="tok-sel">.project__header</span>,
+  <span class="tok-sel">.project__gallery</span>,
+  <span class="tok-sel">.project__nav</span> { <span class="tok-prop">grid-column</span>: 1 / -1; }
+
+  <span class="tok-sel">.project__meta</span> {
+    <span class="tok-prop">grid-column</span>: 2;
+    <span class="tok-prop">grid-row</span>: 3;
+    <span class="tok-prop">position</span>: sticky;
+    <span class="tok-prop">top</span>: 6rem;
+    <span class="tok-prop">border-block</span>: 0;
+  }
+  <span class="tok-sel">.project__body</span> { <span class="tok-prop">grid-column</span>: 1; <span class="tok-prop">grid-row</span>: 3; }
+}</code></pre>
+      </div>
+      <div>
+        <div class="callout callout--warn" style="align-self:start">
+          <div class="callout__ico" aria-hidden="true">!</div>
+          <div>
+            <b>Vijf fouten die je hier gegarandeerd tegenkomt</b>
+            <p><strong>1. Niets te zien.</strong> Je vergat de id in de URL: <span class="mono">project.html</span> zonder <span class="mono">?id=…</span> toont "Project niet gevonden". Dat is correct gedrag, geen bug.</p>
+            <p><strong>2. Alles leeg en een rode fout.</strong> Komma of quote in <span class="mono">projecten.js</span>.</p>
+            <p><strong>3. "undefined" op je pagina.</strong> Een sleutel bestaat niet in je object (bv. <span class="mono">p.jaren</span> in plaats van <span class="mono">p.jaar</span>).</p>
+            <p><strong>4. Links werken lokaal niet online.</strong> Gebruik relatieve paden (<span class="mono">assets/img/…</span>), geen absolute (<span class="mono">/home/jij/…</span>), en let op hoofdletters: GitHub Pages is hoofdlettergevoelig.</p>
+            <p><strong>5. Niets gebeurt er.</strong> Je bent vergeten de twee <span class="mono">&lt;script&gt;</span>-tags toe te voegen, of de volgorde is omgekeerd.</p>
+          </div>
+        </div>
+        <div class="callout callout--ok mt-2">
+          <div class="callout__ico" aria-hidden="true">✓</div>
+          <div>
+            <b>Bonuspunten</b>
+            <p>Een knop "vorig project" naast "volgend project", een categorie-filter op je homepage die dezelfde data gebruikt, of een <span class="mono">&lt;meta name="description"&gt;</span> die je per project invult vanuit je object. Alle drie zijn ze een kleine uitbreiding op wat je hier al hebt.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid--2 mt-2">
+      <div>
+        <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.05rem;margin:0 0 10px">Bonus: filteren met dezelfde data</h3>
+        <pre class="code-block"><code><span class="tok-com">// Dezelfde lijst, andere pagina: filter op categorie</span>
+<span class="tok-tag">const</span> knoppen = document.<span class="tok-prop">querySelectorAll</span>(<span class="tok-str">'[data-filter]'</span>);
+<span class="tok-tag">const</span> grid = document.getElementById(<span class="tok-str">'werk'</span>);
+
+knoppen.<span class="tok-prop">forEach</span>(knop =&gt; {
+  knop.<span class="tok-prop">addEventListener</span>(<span class="tok-str">'click'</span>, () =&gt; {
+    <span class="tok-tag">const</span> keuze = knop.dataset.filter;
+
+    <span class="tok-tag">const</span> zichtbaar = keuze === <span class="tok-str">'alles'</span>
+      ? projecten
+      : projecten.<span class="tok-prop">filter</span>(p =&gt; p.categorie === keuze);
+
+    grid.innerHTML = zichtbaar
+      .<span class="tok-prop">map</span>(p =&gt; <span class="tok-str">`
+        &lt;a class="work" href="project.html?id=${p.id}"&gt;
+          &lt;img src="${p.beelden[0].src}" alt="${p.beelden[0].alt}"&gt;
+          &lt;h3&gt;${p.titel}&lt;/h3&gt;
+        &lt;/a&gt;`</span>)
+      .<span class="tok-prop">join</span>(<span class="tok-str">''</span>);
+  });
+});</code></pre>
+      </div>
+      <div class="callout" style="align-self:start">
+        <div class="callout__ico" aria-hidden="true">i</div>
+        <div>
+          <b>Waarom dit "sterk" is</b>
+          <p>Je homepage en je detailpagina gebruiken nu dezelfde bron. Voeg je een project toe, dan verschijnt het meteen in je grid én werkt de detailpagina — zonder één extra regel HTML. Dat is precies het verschil tussen een site die je één keer bouwt en een site die je blijft onderhouden.</p>
+          <p>Verplicht voor deze opdracht is het niet: je mag ook drie losse detailpagina's schrijven. Maar wie dit doet, haalt gegarandeerd de topscore op Techniek, en heeft zijn site klaar voor de rest van zijn carrière.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout--ok mt-2">
+      <div class="callout__ico" aria-hidden="true">✓</div>
+      <div>
+        <b>Klaar als…</b>
+        <p><span class="mono">project.html?id=schoolfeest-2025</span> je project toont met titel, meta, verhaal en beelden; een onbestaande id een nette melding geeft; de "volgend project"-link werkt; en je in DevTools geen fouten ziet in de console.</p>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.15rem;margin:0 0 10px">Video, in 3 regels</h3>
+    <div class="grid grid--2">
+      <div>
+        <pre class="code-block"><code><span class="tok-tag">&lt;video</span>
+  <span class="tok-attr">controls</span>
+  <span class="tok-attr">playsinline</span>
+  <span class="tok-attr">preload</span>=<span class="tok-str">"metadata"</span>
+  <span class="tok-attr">poster</span>=<span class="tok-str">"assets/video/showreel-poster.webp"</span>
+  <span class="tok-attr">width</span>=<span class="tok-str">"1280"</span> <span class="tok-attr">height</span>=<span class="tok-str">"720"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;source</span> <span class="tok-attr">src</span>=<span class="tok-str">"assets/video/showreel.mp4"</span> <span class="tok-attr">type</span>=<span class="tok-str">"video/mp4"</span><span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;track</span> <span class="tok-attr">kind</span>=<span class="tok-str">"captions"</span> <span class="tok-attr">src</span>=<span class="tok-str">"assets/video/showreel.vtt"</span>
+         <span class="tok-attr">srclang</span>=<span class="tok-str">"nl"</span> <span class="tok-attr">label</span>=<span class="tok-str">"Nederlands"</span> <span class="tok-attr">default</span><span class="tok-tag">&gt;</span>
+  Je browser kan deze video niet afspelen.
+  <span class="tok-tag">&lt;a</span> <span class="tok-attr">href</span>=<span class="tok-str">"assets/video/showreel.mp4"</span><span class="tok-tag">&gt;</span>Download de video<span class="tok-tag">&lt;/a&gt;</span>.
+<span class="tok-tag">&lt;/video&gt;</span></code></pre>
+      </div>
+      <div class="callout callout--warn" style="align-self:start">
+        <div class="callout__ico" aria-hidden="true">!</div>
+        <div>
+          <b>Comprimeer voor je uploadt</b>
+          <p>Met ffmpeg: <span class="mono">ffmpeg -i input.mov -vcodec h264 -crf 26 -vf scale=1280:-2 -an showreel.mp4</span></p>
+          <p style="margin-top:8px">Doel: onder 25 MB, 1280px breed, H.264. Geen <span class="mono">autoplay</span> met geluid — dat blokkeren browsers (en het is irritant). Wil je sfeer? Gebruik een korte, stille loop met <span class="mono">muted loop autoplay playsinline</span>.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--display);text-transform:uppercase;font-size:1.15rem;margin:34px 0 10px">Contactformulier</h3>
+    <div class="grid grid--2">
+      <div>
+        <pre class="code-block"><code><span class="tok-tag">&lt;form</span> <span class="tok-attr">class</span>=<span class="tok-str">"contact-form"</span> <span class="tok-attr">action</span>=<span class="tok-str">"#</span>" <span class="tok-attr">method</span>=<span class="tok-str">"post</span>"<span class="tok-tag">&gt;</span>
+  <span class="tok-tag">&lt;label</span> <span class="tok-attr">for</span>=<span class="tok-str">"naam"</span><span class="tok-tag">&gt;</span>Naam <span class="tok-tag">&lt;span</span> <span class="tok-attr">aria-hidden</span>=<span class="tok-str">"true"</span><span class="tok-tag">&gt;</span>*<span class="tok-tag">&lt;/span&gt;&lt;/label&gt;</span>
+  <span class="tok-tag">&lt;input</span> <span class="tok-attr">id</span>=<span class="tok-str">"naam"</span> <span class="tok-attr">name</span>=<span class="tok-str">"naam"</span> <span class="tok-attr">type</span>=<span class="tok-str">"text"</span>
+         <span class="tok-attr">autocomplete</span>=<span class="tok-str">"name"</span> <span class="tok-attr">required</span><span class="tok-tag">&gt;</span>
+
+  <span class="tok-tag">&lt;label</span> <span class="tok-attr">for</span>=<span class="tok-str">"email"</span><span class="tok-tag">&gt;</span>E-mail *<span class="tok-tag">&lt;/label&gt;</span>
+  <span class="tok-tag">&lt;input</span> <span class="tok-attr">id</span>=<span class="tok-str">"email"</span> <span class="tok-attr">name</span>=<span class="tok-str">"email"</span> <span class="tok-attr">type</span>=<span class="tok-str">"email"</span>
+         <span class="tok-attr">autocomplete</span>=<span class="tok-str">"email"</span> <span class="tok-attr">required</span><span class="tok-tag">&gt;</span>
+
+  <span class="tok-tag">&lt;label</span> <span class="tok-attr">for</span>=<span class="tok-str">"bericht"</span><span class="tok-tag">&gt;</span>Bericht *<span class="tok-tag">&lt;/label&gt;</span>
+  <span class="tok-tag">&lt;textarea</span> <span class="tok-attr">id</span>=<span class="tok-str">"bericht"</span> <span class="tok-attr">name</span>=<span class="tok-str">"bericht"</span>
+            <span class="tok-attr">rows</span>=<span class="tok-str">"6"</span> <span class="tok-attr">required</span><span class="tok-tag">&gt;&lt;/textarea&gt;</span>
+
+  <span class="tok-tag">&lt;button</span> <span class="tok-attr">type</span>=<span class="tok-str">"submit"</span><span class="tok-tag">&gt;</span>Verstuur<span class="tok-tag">&lt;/button&gt;</span>
+<span class="tok-tag">&lt;/form&gt;</span></code></pre>
+      </div>
+      <div class="callout" style="align-self:start">
+        <div class="callout__ico" aria-hidden="true">i</div>
+        <div>
+          <b>Zonder server? Zo los je het op</b>
+          <p>Een formulier heeft een backend nodig. Kies één van deze:</p>
+          <ul style="margin:8px 0 0;padding-left:1.1em;font-size:.94rem">
+            <li><strong>Formspree</strong> — <span class="mono">action="https://formspree.io/f/JOUWID"</span>, gratis tot 50 mails per maand. Werkt perfect naast GitHub Pages.</li>
+            <li><strong>Netlify Forms</strong> — enkel als je je site bij Netlify host en <span class="mono">data-netlify="true"</span> toevoegt.</li>
+            <li><strong>mailto:</strong> — de minst goede optie, maar altijd beter dan een knop die niets doet.</li>
+          </ul>
+          <p style="margin-top:8px">Belangrijk: er moet <em>iets</em> gebeuren na het klikken. Een succesmelding, een bevestigingsmail of een duidelijke uitleg. Een dode knop is een fout.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TUTORIALS / LINKS ============ -->
+<section id="tutorials" aria-labelledby="t-tut">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">08 — Leermateriaal</span>
+      <h2 id="t-tut">Links &amp; cursussen</h2>
+      <p class="sec-intro">Twee dingen zijn verplicht: de Figma-beginnerscursus (voor je begint te ontwerpen) en de cursus Responsive Design van de vakgroep (tijdens het coderen). De mini-cursussen in deel 07 heb je daarnaast nodig voor navigatie, grid en de detailpagina. De rest is naslagwerk.</p>
+    </div>
+
+    <div class="res-list">
+      <a class="res" href="https://help.figma.com/hc/en-us/sections/30880632542743-Figma-Design-for-beginners" target="_blank" rel="noopener">
+        <span class="res__ico" aria-hidden="true">FIG<br>MA</span>
+        <div>
+          <h3>Figma Design for beginners — officiële cursus (verplicht)</h3>
+          <p>De gratis cursus van Figma zelf: frames, Auto Layout, componenten, prototyping en een volledig portfolio-project. Doe dit in fase 02, vóór je begint te ontwerpen.</p>
+          <span class="url">help.figma.com → Figma Design for beginners</span>
+        </div>
+      </a>
+
+      <a class="res" href="https://help.figma.com/hc/en-us/articles/360040450513-Create-layout-grids-with-grids-columns-and-rows" target="_blank" rel="noopener">
+        <span class="res__ico" aria-hidden="true">GRID</span>
+        <div>
+          <h3>Layout grids in Figma</h3>
+          <p>Zo zet je kolommen en marges op je frames — precies dezelfde 12-koloms logica die je later in CSS Grid gebruikt.</p>
+          <span class="url">help.figma.com/hc/en-us/articles/360040450513</span>
+        </div>
+      </a>
+
+      <a class="res" href="https://www.figma.com/resource-library/web-design/" target="_blank" rel="noopener">
+        <span class="res__ico" aria-hidden="true">WEB</span>
+        <div>
+          <h3>Figma Resource Library — Web design</h3>
+          <p>Artikelen over responsief webdesign, portfolio-voorbeelden en webdesign-trends, geschreven door Figma. Handig voor je research in fase 00.</p>
+          <span class="url">figma.com/resource-library/web-design</span>
+        </div>
+      </a>
+
+      <a class="res" href="https://stevenvandersmissen.github.io/responsivedesign/#" target="_blank" rel="noopener">
+        <span class="res__ico" aria-hidden="true">RWD<br>6CM</span>
+        <div>
+          <h3>Responsive Design — de cursus van de vakgroep (verplicht)</h3>
+          <p>De interactieve cursus van Steven Vandersmissen: vijftien modules met theorie, live demo's en invuloefeningen. Van viewport-meta tot container queries. De modules 03 (mobile first), 05–06 (media queries en breakpoints), 08–09 (Flexbox en Grid), <strong>10 (responsive navigatie)</strong> en 12 (responsive images) sluiten rechtstreeks aan op deze opdracht. Maak minstens de oefeningen van module 10.</p>
+          <span class="url">stevenvandersmissen.github.io/responsivedesign</span>
+        </div>
+      </a>
+
+      <a class="res" href="https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Video_and_audio_content" target="_blank" rel="noopener">
+        <span class="res__ico" aria-hidden="true">VID</span>
+        <div>
+          <h3>MDN — Video en audio op het web</h3>
+          <p>Over <span class="mono">&lt;video&gt;</span>, formats, ondertitels en waarom <span class="mono">playsinline</span> op iOS je redding is.</p>
+          <span class="url">developer.mozilla.org → Video and audio content</span>
+        </div>
+      </a>
+
+      <a class="res" href="https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams" target="_blank" rel="noopener">
+        <span class="res__ico" aria-hidden="true">JS</span>
+        <div>
+          <h3>MDN — URLSearchParams</h3>
+          <p>De referentie voor het uitlezen van <span class="mono">?id=…</span> uit je URL, precies wat de detailpagina in 07.C doet. Handig als je dieper wil gaan dan het voorbeeld.</p>
+          <span class="url">developer.mozilla.org → URLSearchParams</span>
+        </div>
+      </a>
+
+      <a class="res" href="https://www.a11yproject.com/checklist/" target="_blank" rel="noopener">
+        <span class="res__ico" aria-hidden="true">A11Y</span>
+        <div>
+          <h3>The A11y Project — Checklist</h3>
+          <p>Een praktische toegankelijkheidschecklist. Loop die door in fase 07 en je haalt Lighthouse-accessibility zonder veel extra werk.</p>
+          <span class="url">a11yproject.com/checklist</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="callout mt-2">
+      <div class="callout__ico" aria-hidden="true">i</div>
+      <div>
+        <b>Over tutorials zoeken</b>
+        <p>Zoek Engelstalig. "CSS masonry grid" levert tien keer meer op dan "masonry grid css uitleg". Gebruik MDN als waarheid en YouTube als versneller — en test altijd zelf of de code uit een tutorial van 2019 nog werkt.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RUBRIEK ============ -->
+<section id="rubriek" aria-labelledby="t-rub">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">09 — Beoordeling</span>
+      <h2 id="t-rub">Hoe je punten verdeeld worden</h2>
+      <p class="sec-intro">Je wordt niet beoordeeld op "mooi", maar op een samenhangend geheel: een doordacht ontwerp, correcte code, eigen media en een werkend eindproduct. Onderstaande verdeling is de volledige rubriek.</p>
+    </div>
+
+    <div class="rubric">
+      <div class="rubric__row">
+        <span class="rubric__name">Ontwerp &amp; Figma<small>Drie frames, consistent systeem, Auto Layout, componenten, prototype, verwerkte feedback</small></span>
+        <span class="rubric__pts">25</span>
+        <span class="rubric__bar"><i style="width:25%"></i></span>
+      </div>
+      <div class="rubric__row">
+        <span class="rubric__name">Techniek &amp; responsive code<small>Semantische HTML, nette CSS, mobile first, 3 breakpoints, JS-interactie, validatie</small></span>
+        <span class="rubric__pts">25</span>
+        <span class="rubric__bar"><i style="width:25%"></i></span>
+      </div>
+      <div class="rubric__row">
+        <span class="rubric__name">Beeld, video &amp; performance<small>Eigen werk, geoptimaliseerde beelden, srcset, werkende video met ondertitels, laadtijd</small></span>
+        <span class="rubric__pts">20</span>
+        <span class="rubric__bar"><i style="width:20%"></i></span>
+      </div>
+      <div class="rubric__row">
+        <span class="rubric__name">Toegankelijkheid &amp; UX<small>Contrast, focus, toetsenbord, alt-teksten, duidelijke CTA, leesbare typografie</small></span>
+        <span class="rubric__pts">15</span>
+        <span class="rubric__bar"><i style="width:15%"></i></span>
+      </div>
+      <div class="rubric__row">
+        <span class="rubric__name">Proces, peer feedback &amp; reflectie<small>Research, moodboard, aanwezigheid in de lessen, feedback geven en verwerken, reflectie</small></span>
+        <span class="rubric__pts">15</span>
+        <span class="rubric__bar"><i style="width:15%"></i></span>
+      </div>
+    </div>
+
+    <div class="table-wrap mt-2">
+      <table>
+        <caption>Wat maakt het verschil tussen een voldoende en een topscore</caption>
+        <thead>
+          <tr><th scope="col">Criterium</th><th scope="col">Onvoldoende</th><th scope="col">Voldoende</th><th scope="col">Sterk / excellent</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Figma</th>
+            <td>Eén frame, of drie geschaalde kopieën</td>
+            <td>Drie frames, herkenbaar hetzelfde ontwerp</td>
+            <td>Drie doordachte frames met eigen layout per scherm, componenten, variants en een klikbaar prototype</td>
+          </tr>
+          <tr>
+            <th scope="row">Responsive</th>
+            <td>Werkt enkel op groot scherm</td>
+            <td>Werkt op 390, 768 en 1440px</td>
+            <td>Layouts zijn per breakpoint écht herontworpen; geen horizontale scroll, geen afgekapte tekst, getest op een echt toestel</td>
+          </tr>
+          <tr>
+            <th scope="row">Code</th>
+            <td>Inline styles, div-soep, validatorfouten</td>
+            <td>Semantisch, CSS in eigen bestand, valide</td>
+            <td>Netjes opgebouwd met custom properties, duidelijke naamgeving, gecommentarieerde JS, en je kan elke regel uitleggen</td>
+          </tr>
+          <tr>
+            <th scope="row">Portfolio-grid</th>
+            <td>Lijst met willekeurige beelden</td>
+            <td>Grid met 6 werken en titels</td>
+            <td>Editorial of masonry grid met duidelijke hiërarchie, hover-states en 3+ detailpagina's met een echt verhaal</td>
+          </tr>
+          <tr>
+            <th scope="row">Media</th>
+            <td>Stockbeelden of enorme bestanden</td>
+            <td>Eigen afbeeldingen, gecomprimeerd, eigen video</td>
+            <td>Doordachte beeldselectie, srcset, video met ondertitels en poster, alles razendsnel ladend</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid grid--2 mt-2">
+      <div class="card card--red">
+        <h3>Automatisch puntenverlies</h3>
+        <ul style="margin:0;padding-left:1.1em">
+          <li>Site niet online bereikbaar</li>
+          <li>Geen Figma-ontwerp of geen drie schermen</li>
+          <li>Werk van iemand anders, of AI-gegenereerde beelden die je als eigen werk voorstelt</li>
+          <li>Template van een websitebouwer zonder eigen code</li>
+          <li>Video die niet afspeelt op een gsm</li>
+          <li>Je kan je eigen code niet uitleggen</li>
+        </ul>
+      </div>
+      <div class="card card--yellow">
+        <h3>Bonus (max. +5)</h3>
+        <ul style="margin:0;padding-left:1.1em">
+          <li>Eigen domeinnaam</li>
+          <li>Een filter of zoekfunctie in je portfolio (JS)</li>
+          <li>Dark mode met <span class="mono">prefers-color-scheme</span></li>
+          <li>Een echte 404-pagina of een slimme "volgend project"-flow</li>
+          <li>Micro-animaties die de <span class="mono">prefers-reduced-motion</span> respecteren</li>
+          <li>Een extra grafisch werk dat je speciaal voor deze site maakte</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AFSPRAKEN ============ -->
+<section aria-labelledby="t-afspraken">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">10 — Afspraken</span>
+      <h2 id="t-afspraken">Eerlijk spel</h2>
+    </div>
+
+    <div class="grid grid--3">
+      <div class="card">
+        <h3>Eigen werk</h3>
+        <p style="margin:0">Je portfolio toont <strong>jouw</strong> werk. Gebruik je een afbeelding van iemand anders (bv. in je moodboard of als sfeerbeeld), vermeld je de bron. AI-gegenereerde beelden mogen als aanvulling, maar niet als vervanging van je eigen werk — en je vermeldt ze.</p>
+      </div>
+      <div class="card">
+        <h3>AI-gebruik</h3>
+        <p style="margin:0">Codeerhulp van AI mag, zoals je ook een tutorial mag volgen. De regel is simpel: <strong>je moet elke regel kunnen uitleggen en verdedigen</strong>. Kopieer je een blok dat je niet begrijpt, dan is dat jouw verantwoordelijkheid — en het valt op in de verdediging. Vermeld AI-hulp in je reflectie.</p>
+      </div>
+      <div class="card">
+        <h3>Back-ups</h3>
+        <p style="margin:0">Werk in je Git-repository en push minstens één keer per werkdag, ook als iets nog niet af is. Zo heb je altijd een back-up én een procesbewijs. "Mijn laptop is gecrasht" is geen geldig excuus en levert geen uitstel op — je code staat online.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section id="faq" aria-labelledby="t-faq">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">11 — FAQ</span>
+      <h2 id="t-faq">Veelgestelde vragen</h2>
+    </div>
+
+    <details class="faq">
+      <summary>Ik heb echt geen zes grafische werken. Wat nu?</summary>
+      <div class="faq__body">
+        <p>Kijk verder dan je schoolmap: foto's die je nam, een poster voor een fuif, een logo voor een vriend, een Instagram-post, een schetsboek, een 3D-experiment, een UI-oefening. Grafisch werk is breder dan "een affiche voor het vak". Heb je écht te weinig, dan maak je in overleg met je leerkracht twee extra werken — dat is evengoed geldig werk.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Waarom mag ik geen "Welkom op mijn website" schrijven?</summary>
+      <div class="faq__body">
+        <p>Omdat het niets zegt. Elke portfolio op het internet begint zo, dus de zin onderscheidt jou nergens. Je bezoeker leert er niet uit wat je maakt, met welke tools je werkt of waarom het de moeite is om verder te scrollen.</p>
+        <p>Schrijf in plaats daarvan een zin die <strong>alleen over jouw werk kan gaan</strong>: een claim, een vraag, een getal, een statement of een concrete beschrijving. In de checklist vind je vijf vertrekpunten met voorbeelden. Let op: ook "Hallo en welkom!", "Welkom op mijn portfolio" en "Leuk dat je er bent" vallen onder dezelfde regel.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Mag ik een framework zoals Bootstrap of Tailwind gebruiken?</summary>
+      <div class="faq__body">
+        <p>Standaard niet. Deze opdracht gaat over <em>zelf</em> layout bouwen — met Flexbox en Grid. Een framework zou de kern van de opdracht wegnemen. Wil je het toch om een goede reden, vraag het dan vooraf en schriftelijk. Bootstrap-templates van internet kopiëren is in elk geval geen optie.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Hoe lever ik precies in via GitHub?</summary>
+      <div class="faq__body">
+        <p>Je maakt een openbare repository <span class="mono">6cm-portfolio-voornaam</span>, commit en push je werk, zet GitHub Pages aan (Settings → Pages → Deploy from a branch → <span class="mono">main</span> / <span class="mono">root</span>) en bezorg de leerkracht twee links: die naar je repository en die naar je gepubliceerde site.</p>
+        <p>Zet in je README je naam, je klas, een korte omschrijving en de link naar je Figma-ontwerp. Je commitgeschiedenis is je procesbewijs: veel kleine commits zijn beter dan één grote upload op de laatste dag.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Moet mijn site echt online staan?</summary>
+      <div class="faq__body">
+        <p>Ja. GitHub Pages is gratis en je hebt het in tien minuten onder de knie. Leren publiceren maakt deel uit van de opdracht: een portfolio dat alleen op je eigen schijf staat, bestaat niet voor de buitenwereld. Omdat je toch via GitHub inlevert, is GitHub Pages de logische keuze: één repository, twee vliegen.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Hoe groot moet mijn video zijn?</summary>
+      <div class="faq__body">
+        <p>Maximaal 60 seconden en onder 25 MB, in MP4 (H.264). Zorg voor een posterbeeld (een screenshot uit de video) en een ondertitelbestand (.vtt). Je video moet afspelen op een smartphone zonder extra plugin, en zeker zonder dat de bezoeker eerst 50 MB moet downloaden.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Wat als mijn ontwerp niet overeenkomt met mijn code?</summary>
+      <div class="faq__body">
+        <p>Dat mag deels — ontwerpen is geen 1-op-1 contract, en tijdens het coderen ontdek je altijd dingen. Maar de <strong>structuur en het kleur- en typografiesysteem</strong> moeten herkenbaar hetzelfde zijn, en je moet kunnen uitleggen waarom je afweek. Volledig losgekoppelde code die "toevallig" op je ontwerp lijkt, kost punten.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Ik ben sneller klaar dan de rest. Wat doe ik dan?</summary>
+      <div class="faq__body">
+        <p>Kijk naar de bonussen in de rubriek: een eigen domein, een filter in je grid, dark mode, een 404-pagina. Of verhoog de lat: voeg een vierde detailpagina toe, maak een "case study" van je beste werk met procesbeelden, of verbeter je Lighthouse-score naar 100 op accessibility. Er is altijd een volgende stap.</p>
+      </div>
+    </details>
+
+    <details class="faq">
+      <summary>Mag ik mijn portfolio later blijven aanvullen?</summary>
+      <div class="faq__body">
+        <p>Graag zelfs. Dit is geen eindpunt maar een startpunt: je gebruikt deze site wellicht voor je stage, je hogere studies of je eerste klanten. Bewaar je Figma-bestand en je repository, en blijf werken toevoegen. Dat is precies wat een echte ontwerper doet.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section aria-labelledby="t-cta">
+  <div class="wrap">
+    <div class="cta-banner">
+      <div>
+        <span class="tag tag--red" style="margin-bottom:12px">KLAAR OM TE STARTEN?</span>
+        <h2 id="t-cta">Open Figma.<br>Maak een frame.<br>Begin.</h2>
+        <p style="margin-top:10px">Het moeilijkste deel van deze opdracht is het eerste lege frame. Zet er een titel in, dan volgt de rest.</p>
+      </div>
+      <div style="display:grid;gap:12px;justify-items:stretch">
+        <a class="btn" href="https://help.figma.com/hc/en-us/sections/30880632542743-Figma-Design-for-beginners" target="_blank" rel="noopener">Figma-cursus starten ↗</a>
+        <a class="btn btn--ghost" href="https://www.figma.com/files" target="_blank" rel="noopener">Naar Figma Files ↗</a>
+        <a class="btn btn--red" href="#eisen">Checklist afvinken</a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <p class="foot-title">6CM<br>Coding</p>
+        <p style="margin:0;font-size:.95rem;max-width:34ch">Finale opdracht web development: ontwerp en bouw je eigen portfolio website. Van Figma-frame tot online link.</p>
+      </div>
+      <div>
+        <h4>Op deze pagina</h4>
+        <ul>
+          <li><a href="#opdracht">De opdracht</a></li>
+          <li><a href="#fasen">Stappenplan</a></li>
+          <li><a href="#eisen">Checklist</a></li>
+          <li><a href="#code">Code</a></li>
+          <li><a href="#nav-cursus">Mini-cursus navigatie</a></li>
+          <li><a href="#grid-cursus">Mini-cursus grid</a></li>
+          <li><a href="#detail-cursus">Mini-cursus detailpagina (JS)</a></li>
+          <li><a href="#rubriek">Beoordeling</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Externe links</h4>
+        <ul>
+          <li><a href="https://help.figma.com/hc/en-us/sections/30880632542743-Figma-Design-for-beginners" target="_blank" rel="noopener">Figma-cursus</a></li>
+          <li><a href="https://www.figma.com/" target="_blank" rel="noopener">Figma</a></li>
+          <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams" target="_blank" rel="noopener">MDN URLSearchParams</a></li>
+          <li><a href="https://stevenvandersmissen.github.io/responsivedesign/#" target="_blank" rel="noopener">RWD-cursus</a></li>
+          <li><a href="https://validator.w3.org/" target="_blank" rel="noopener">W3C Validator</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-note">
+      <span>© 2026 · Vak Coding · 6CM</span>
+      <span>Versie 1.1 · indienen via GitHub</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ---- Mobiel menu van deze opdrachtpagina ----
+const toggle = document.querySelector('.menu-toggle');
+const nav = document.querySelector('#hoofdmenu');
+
+function setMenu(open) {
+  toggle.setAttribute('aria-expanded', String(open));
+  nav.classList.toggle('is-open', open);
+}
+
+toggle.addEventListener('click', () => {
+  const isOpen = toggle.getAttribute('aria-expanded') === 'true';
+  setMenu(!isOpen);
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && nav.classList.contains('is-open')) {
+    setMenu(false);
+    toggle.focus();
+  }
+});
+
+nav.addEventListener('click', (e) => {
+  if (e.target.matches('a')) setMenu(false);
+});
+
+// ---- Checklist: status bewaren (best effort, werkt ook zonder opslag) ----
+const boxes = document.querySelectorAll('.item input[type="checkbox"]');
+try {
+  const saved = JSON.parse(localStorage.getItem('6cm-checklist') || '[]');
+  boxes.forEach((b, i) => { if (saved[i]) b.checked = true; });
+  boxes.forEach((b, i) => {
+    b.addEventListener('change', () => {
+      const state = Array.from(boxes).map(x => x.checked);
+      localStorage.setItem('6cm-checklist', JSON.stringify(state));
+    });
+  });
+} catch (err) {
+  // localStorage geblokkeerd: checkboxes werken gewoon, zonder te bewaren.
+}
+
+// ---- Open de fase waarvan de URL een anker heeft ----
+if (location.hash) {
+  const target = document.querySelector(location.hash);
+  if (target && target.tagName === 'DETAILS') target.open = true;
+}
+</script>
+</body>
+</html>
